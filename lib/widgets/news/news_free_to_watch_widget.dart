@@ -93,7 +93,7 @@ class NewsFreeToWatchWidget extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
       ],
     );
   }
