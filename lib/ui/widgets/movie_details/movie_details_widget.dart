@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:themoviedb/constants/constants.dart';
 
-import '../../constants/constants.dart';
 import 'movie_details_main_info_widget.dart';
 import 'movie_details_main_screen_cast_widget.dart';
 

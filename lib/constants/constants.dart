@@ -13,21 +13,19 @@ const greyColor = Color.fromRGBO(0, 0, 0, .6);
 
 const unselectedItem = Color.fromARGB(255, 189, 189, 189);
 
-Widget AppText({
-  FontWeight isBold = FontWeight.normal,
-  Color color = blackColor,
-  required double size,
-  required String text,
-  int maxLines = 0,
-  bool overflow = false,
-  bool alignCenter = false
-  
-}) {
+Widget AppText(
+    {FontWeight isBold = FontWeight.normal,
+    Color color = blackColor,
+    required double size,
+    required String text,
+    int maxLines = 0,
+    bool overflow = false,
+    bool alignCenter = false}) {
   return Text(
     text,
-    textAlign: alignCenter==true?TextAlign.center:null,
-    maxLines: maxLines==0?null:maxLines,
-    overflow: overflow==true?TextOverflow.ellipsis:null,
+    textAlign: alignCenter == true ? TextAlign.center : null,
+    maxLines: maxLines == 0 ? null : maxLines,
+    overflow: overflow == true ? TextOverflow.ellipsis : null,
     style: TextStyle(
       color: color,
       fontSize: size,
@@ -37,10 +35,10 @@ Widget AppText({
 }
 
 // for displaying snackbars
-showSnackBar(BuildContext context, String text) {
+showSnackBar(BuildContext context, String text, {Color color = primaryColor}) {
   return ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      backgroundColor: primaryColor,
+      backgroundColor: color,
       elevation: 3,
       content: Text(text, textAlign: TextAlign.center),
     ),

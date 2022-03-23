@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:themoviedb/Libarary/Widgets/Inherited/provider.dart';
 import 'package:themoviedb/constants/constants.dart';
+import 'package:themoviedb/ui/widgets/auth/auth_model.dart';
 
 class AuthWidget extends StatefulWidget {
   const AuthWidget({Key? key}) : super(key: key);
-
   @override
   State<AuthWidget> createState() => _AuthWidgetState();
 }
@@ -77,32 +78,12 @@ class _HeaderWidget extends StatelessWidget {
   }
 }
 
-class _FormWidget extends StatefulWidget {
+class _FormWidget extends StatelessWidget {
   const _FormWidget({Key? key}) : super(key: key);
 
   @override
-  State<_FormWidget> createState() => __FormWidgetState();
-}
-
-class __FormWidgetState extends State<_FormWidget> {
-  final _loginTextController = TextEditingController();
-  final _passwordTextController = TextEditingController();
-
-  void _auth() {
-    final login = _loginTextController.text;
-    final password = _loginTextController.text;
-
-    if (login == 'admin' && password == 'admin') {
-      Navigator.of(context).pushReplacementNamed('/main_screen');
-    } else {
-      showSnackBar(context, 'error: Invalid email or password');
-    }
-  }
-
-  void _resetPassword() {}
-
-  @override
   Widget build(BuildContext context) {
+    final model = NotifierProvider.read<AuthModel>(context);
     const textFieldDecorator = InputDecoration(
       border: OutlineInputBorder(),
       contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
@@ -114,7 +95,7 @@ class __FormWidgetState extends State<_FormWidget> {
         const SizedBox(height: 5),
         TextField(
           decoration: textFieldDecorator,
-          controller: _loginTextController,
+          controller: model?.loginTextController,
         ),
         const SizedBox(height: 20),
         AppText(size: 16, text: 'Пароль'),
@@ -122,32 +103,19 @@ class __FormWidgetState extends State<_FormWidget> {
         TextField(
           decoration: textFieldDecorator,
           obscureText: true,
-          controller: _passwordTextController,
+          controller: model?.passwordTextController,
         ),
         const SizedBox(height: 25),
         Row(
           children: [
-            TextButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(secondaryColor),
-                padding: MaterialStateProperty.all(
-                    const EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
-              ),
-              onPressed: _auth,
-              child: AppText(
-                isBold: FontWeight.bold,
-                size: 16,
-                text: 'Войти',
-                color: whiteColor,
-              ),
-            ),
+            const _AuthButtonWidget(),
             const SizedBox(width: 25),
             TextButton(
               style: ButtonStyle(
                 padding: MaterialStateProperty.all(
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 5)),
               ),
-              onPressed: _resetPassword,
+              onPressed: () {},
               child: AppText(
                 isBold: FontWeight.w400,
                 size: 16,
@@ -159,5 +127,39 @@ class __FormWidgetState extends State<_FormWidget> {
         )
       ],
     );
+  }
+}
+
+class _AuthButtonWidget extends StatelessWidget {
+  const _AuthButtonWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final model = NotifierProvider.watch<AuthModel>(context);
+    final onPressed =
+        model?.canStartAuth == true ? () => model?.auth(context) : null;
+    final child = model?.isAuthProgress == true
+        ? const SizedBox(
+            height: 16,
+            width: 16,
+            child: CircularProgressIndicator(
+              color: whiteColor,
+              strokeWidth: 2,
+            ),
+          )
+        : AppText(
+            isBold: FontWeight.bold,
+            size: 16,
+            text: 'Войти',
+            color: whiteColor,
+          );
+    return TextButton(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(secondaryColor),
+          padding: MaterialStateProperty.all(
+              const EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
+        ),
+        onPressed: onPressed,
+        child: child);
   }
 }

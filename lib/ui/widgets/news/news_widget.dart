@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:themoviedb/constants/constants.dart';
 import 'package:themoviedb/resources/resources.dart';
 
-import '../../constants/constants.dart';
+
 import 'news_free_to_watch_widget.dart';
 import 'news_popular_widget.dart';
 import 'news_trailers_widget.dart';

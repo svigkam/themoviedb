@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:themoviedb/widgets/movie_list/movie_list_widget.dart';
+import 'package:themoviedb/constants/constants.dart';
+import 'package:themoviedb/domain/data_providers/session_data_provider.dart';
+import 'package:themoviedb/ui/widgets/movie_list/movie_list_widget.dart';
 
-import '../../constants/constants.dart';
+
 import '../news/news_widget.dart';
 import '../tv_show_list/tv_show_list_widget.dart';
 
@@ -27,8 +29,8 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
       appBar: AppBar(
         backgroundColor: primaryColor,
         leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.menu, color: whiteColor),
+          onPressed: () => SessionDataProvider().setSessionId(null),
+          icon: const Icon(Icons.logout,color: whiteColor),
         ),
         title: const Image(
           image: AssetImage('assets/images/logo.png'),

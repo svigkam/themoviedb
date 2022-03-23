@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:themoviedb/constants/constants.dart';
+import 'package:themoviedb/resources/resources.dart';
 
-import '../../constants/constants.dart';
-import '../../resources/resources.dart';
+
 import '../elements/circle_progress_bar.dart';
 
 class NewsFreeToWatchWidget extends StatelessWidget {

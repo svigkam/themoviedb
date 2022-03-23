@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:themoviedb/constants/constants.dart';
 import 'package:themoviedb/resources/resources.dart';
+import 'package:themoviedb/ui/navigation/main_navigation.dart';
 
-class TvShow {
+class Movie {
   final int id;
   final String imageName;
   final String title;
   final String time;
   final String description;
 
-  TvShow({
+  Movie({
     required this.id,
     required this.title,
     required this.description,
@@ -18,15 +19,15 @@ class TvShow {
   });
 }
 
-class TvShowListWidget extends StatefulWidget {
-  const TvShowListWidget({Key? key}) : super(key: key);
+class MovieListWidget extends StatefulWidget {
+  const MovieListWidget({Key? key}) : super(key: key);
   @override
-  State<TvShowListWidget> createState() => _TvShowListWidgetState();
+  State<MovieListWidget> createState() => _MovieListWidgetState();
 }
 
-class _TvShowListWidgetState extends State<TvShowListWidget> {
-  final _tvShows = [
-    TvShow(
+class _MovieListWidgetState extends State<MovieListWidget> {
+  final _movies = [
+    Movie(
       id: 1,
       title: 'Эта фарфоровая кукла влюбилась',
       description:
@@ -34,7 +35,7 @@ class _TvShowListWidgetState extends State<TvShowListWidget> {
       time: '9 января 2022',
       imageName: AppImages.farfor,
     ),
-    TvShow(
+    Movie(
       id: 2,
       title: 'Шан-Чи и легенда десяти колец',
       description:
@@ -42,7 +43,7 @@ class _TvShowListWidgetState extends State<TvShowListWidget> {
       time: '2 сентября 2021',
       imageName: AppImages.shanchi,
     ),
-    TvShow(
+    Movie(
       id: 3,
       title: 'Веном 2',
       description:
@@ -52,33 +53,33 @@ class _TvShowListWidgetState extends State<TvShowListWidget> {
     ),
   ];
 
-  var _filteredTvShow = <TvShow>[];
+  var _filteredMovies = <Movie>[];
 
   final _searchController = TextEditingController();
 
-  void _searchTvShows() {
+  void _searchMovies() {
     final query = _searchController.text;
     if (query.isNotEmpty) {
-      _filteredTvShow = _tvShows.where((TvShow tvShow) {
-        return tvShow.title.toLowerCase().contains(query.toLowerCase());
+      _filteredMovies = _movies.where((Movie movie) {
+        return movie.title.toLowerCase().contains(query.toLowerCase());
       }).toList();
     } else {
-      _filteredTvShow = _tvShows;
+      _filteredMovies = _movies;
     }
     setState(() {});
   }
 
-  void _onTvShowTap(int index) {
-    final id = _filteredTvShow[index].id;
+  void _onMovieTap(int index) {
+    final id = _filteredMovies[index].id;
     Navigator.of(context)
-        .pushNamed('/main_screen/movie_details', arguments: id);
+        .pushNamed(MainNavigationRouteNames.movieDetails, arguments: id);
   }
 
   @override
   void initState() {
     super.initState();
-    _filteredTvShow = _tvShows;
-    _searchController.addListener(_searchTvShows);
+    _filteredMovies = _movies;
+    _searchController.addListener(_searchMovies);
   }
 
   @override
@@ -88,11 +89,11 @@ class _TvShowListWidgetState extends State<TvShowListWidget> {
         ListView.builder(
           padding: const EdgeInsets.only(top: 70),
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          itemCount: _filteredTvShow.length,
+          itemCount: _filteredMovies.length,
           itemExtent: 163,
           physics: const BouncingScrollPhysics(),
           itemBuilder: (context, index) {
-            final movie = _filteredTvShow[index];
+            final movie = _filteredMovies[index];
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Stack(
@@ -150,7 +151,7 @@ class _TvShowListWidgetState extends State<TvShowListWidget> {
                     color: Colors.transparent,
                     child: InkWell(
                       borderRadius: BorderRadius.circular(10),
-                      onTap: () => _onTvShowTap(index),
+                      onTap: () => _onMovieTap(index),
                     ),
                   )
                 ],
