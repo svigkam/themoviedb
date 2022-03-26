@@ -37,33 +37,29 @@ class AuthModel extends ChangeNotifier {
         username: login,
         password: password,
       );
-      showSnackBar(context, 'Success', color: Colors.green);
-    } catch (e) {
-      showSnackBar(context, e.toString(), color: Colors.red);
-      _isAuthProgress = false;
-      notifyListeners();
-      return;
+    } on ApiClientException catch (e) {
+      switch (e.type) {
+        case ApiClientExceptionType.Network:
+          _errorMessage =
+              'Сервер не доступен. Проверьте подключение к интернету.';
+          showSnackBar(context, _errorMessage!, color: Colors.red);
+          break;
+        case ApiClientExceptionType.Auth:
+          _errorMessage = 'Неверный логин и пароль!';
+          showSnackBar(context, _errorMessage!, color: Colors.red);
+          break;
+        case ApiClientExceptionType.Other:
+          _errorMessage = 'Произошла ошибка. Попробуйте еще раз.';
+          showSnackBar(context, _errorMessage!, color: Colors.red);
+          break;
+      }
     }
+    _isAuthProgress = false;
+    notifyListeners();
     await _sessionDataProvider.setSessionId(sessionId);
-
-    Navigator.of(context)
-        .pushReplacementNamed(MainNavigationRouteNames.mainScreen);
+    if (sessionId != null) {
+      Navigator.of(context)
+          .pushReplacementNamed(MainNavigationRouteNames.mainScreen);
+    }
   }
 }
-
-// class AuthProvider extends InheritedNotifier {
-//   final AuthModel model;
-//   const AuthProvider({Key? key, required this.model, required Widget child})
-//       : super(key: key, child: child, notifier: model);
-
-//   static AuthProvider? watch(BuildContext context) {
-//     return context.dependOnInheritedWidgetOfExactType<AuthProvider>();
-//   }
-
-//   static AuthProvider? read(BuildContext context) {
-//     final widget =
-//         context.getElementForInheritedWidgetOfExactType<AuthProvider>()?.widget;
-//     return widget is AuthProvider ? widget : null;
-//   }
-// }
-

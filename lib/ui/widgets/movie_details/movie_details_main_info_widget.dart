@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:themoviedb/Libarary/Widgets/Inherited/provider.dart';
 import 'package:themoviedb/constants/constants.dart';
-import 'package:themoviedb/resources/resources.dart';
+import 'package:themoviedb/domain/api_client/api_client.dart';
+import 'package:themoviedb/ui/widgets/movie_details/movie_details_model.dart';
 
 import '../elements/circle_progress_bar.dart';
 
@@ -25,24 +27,35 @@ class MovieDetailsMainInfoWidget extends StatelessWidget {
         // overview
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-          child: AppText(text: 'Обзор', size: 18, color: whiteColor),
+          child: AppText(text: 'Описание', size: 18, color: whiteColor),
         ),
         // overview text
-        ColoredBox(
-          color: const Color.fromRGBO(22, 21, 25, 1),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-            child: AppText(
-                color: whiteColor,
-                size: 16,
-                text:
-                    'Более чем через год после тех событий журналист Эдди Брок пытается приспособиться к жизни в качестве хозяина инопланетного симбиота Венома, который наделяет его сверхчеловеческими способностями. Брок пытается возродить свою карьеру и берет интервью у серийного убийцы Клетуса Касади, который по воле случая становится хозяином Карнажа и сбегает из тюрьмы после неудавшейся казни.'),
-          ),
-        ),
+        const _OverViewWidget(),
         const SizedBox(height: 25),
         const _PeopleWidget(),
         const SizedBox(height: 25),
       ],
+    );
+  }
+}
+
+class _OverViewWidget extends StatelessWidget {
+  const _OverViewWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final model = NotifierProvider.watch<MovieDetailsModel>(context);
+
+    final overview = model?.movieDetails?.overview ?? '';
+
+    return ColoredBox(
+      color: const Color.fromRGBO(22, 21, 25, 1),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+        child: AppText(color: whiteColor, size: 16, text: overview),
+      ),
     );
   }
 }
@@ -52,15 +65,26 @@ class _TopPostersWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: const [
-        Image(image: AssetImage(AppImages.topHeader)),
-        Positioned(
+    final model = NotifierProvider.watch<MovieDetailsModel>(context);
+    final backdropPath = model?.movieDetails?.backdropPath;
+    final posterPath = model?.movieDetails?.posterPath;
+    return AspectRatio(
+      aspectRatio: 390 / 219,
+      child: Stack(
+        children: [
+          backdropPath != null
+              ? Image.network(ApiClient.imageUrl(backdropPath))
+              : const SizedBox.shrink(),
+          Positioned(
             top: 20,
             bottom: 20,
             left: 20,
-            child: Image(image: AssetImage(AppImages.topHeaderSubImage))),
-      ],
+            child: posterPath != null
+                ? Image.network(ApiClient.imageUrl(posterPath))
+                : const SizedBox.shrink(),
+          )
+        ],
+      ),
     );
   }
 }
@@ -70,22 +94,25 @@ class _MovieNameWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = NotifierProvider.watch<MovieDetailsModel>(context);
+    var year = model?.movieDetails?.releaseDate?.year.toString();
+    year != null ? year = ' ($year)' : '';
     return RichText(
       maxLines: 3,
       textAlign: TextAlign.center,
-      text: const TextSpan(
+      text: TextSpan(
         children: [
           TextSpan(
-            text: 'Веном 2',
-            style: TextStyle(
+            text: model?.movieDetails?.title ?? '',
+            style: const TextStyle(
               color: whiteColor,
               fontSize: 21,
               fontWeight: FontWeight.w800,
             ),
           ),
           TextSpan(
-            text: ' (2021)',
-            style: TextStyle(
+            text: year,
+            style: const TextStyle(
               color: whiteColor,
               fontSize: 16,
               fontWeight: FontWeight.w400,
@@ -102,6 +129,9 @@ class _ScoreWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = NotifierProvider.watch<MovieDetailsModel>(context);
+    var voteAverage = model?.movieDetails?.voteAverage.toDouble();
+    voteAverage != null ? voteAverage = (voteAverage * 10) : voteAverage = 0;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -113,8 +143,8 @@ class _ScoreWidget extends StatelessWidget {
                   width: 40,
                   height: 40,
                   child: RadialPercentWidget(
-                      child: const Text('72'),
-                      percent: 0.72,
+                      child: Text(voteAverage.toStringAsFixed(0)),
+                      percent: voteAverage / 100,
                       fillColor: const Color.fromARGB(255, 10, 23, 25),
                       lineColor: const Color.fromARGB(255, 37, 203, 103),
                       freeColor: const Color.fromARGB(255, 25, 54, 31),
@@ -147,14 +177,43 @@ class _SummeryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = NotifierProvider.watch<MovieDetailsModel>(context);
+    var texts = <String>[];
+
+    final releaseDate = model?.movieDetails?.releaseDate;
+    if (releaseDate != null) {
+      texts.add(model!.stringFromDate(releaseDate));
+    }
+
+    final productionCountries = model?.movieDetails?.productionCountries;
+    if (productionCountries != null && productionCountries.isNotEmpty) {
+      texts.add('(${productionCountries.first.iso})');
+    }
+
+    final runtime = model?.movieDetails?.runtime ?? 0;
+    final duration = Duration(minutes: runtime);
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    texts.add('${hours}h ${minutes}m');
+
+    var genresNames = [];
+    final genres = model?.movieDetails?.genres;
+    if (genres != null && genres.isNotEmpty) {
+      for (var genre in genres) {
+        genresNames.add(genre.name);
+      }
+      genresNames.join(', ');
+      texts.add(genresNames.join(', '));
+    }
+
     return ColoredBox(
       color: const Color.fromRGBO(22, 21, 25, 1),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 70),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
         child: AppText(
             alignCenter: true,
             maxLines: 3,
-            text: '16+ 30/09/2021 (RU) 1h 36m фантастика, боевик, приключения',
+            text: texts.join(' '),
             size: 14,
             color: whiteColor),
       ),

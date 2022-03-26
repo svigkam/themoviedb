@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:themoviedb/Libarary/Widgets/Inherited/provider.dart';
 import 'package:themoviedb/constants/constants.dart';
 import 'package:themoviedb/domain/data_providers/session_data_provider.dart';
+import 'package:themoviedb/ui/widgets/movie_list/movie_list_model.dart';
 import 'package:themoviedb/ui/widgets/movie_list/movie_list_widget.dart';
-
 
 import '../news/news_widget.dart';
 import '../tv_show_list/tv_show_list_widget.dart';
@@ -15,6 +16,7 @@ class MainScreenWidget extends StatefulWidget {
 
 class _MainScreenWidgetState extends State<MainScreenWidget> {
   int _selectedTab = 0;
+  final movieListModel = MovieListModel();
 
   void onSelectTab(int index) {
     if (_selectedTab == index) return;
@@ -24,13 +26,19 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    movieListModel.setupLocale(context);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
         leading: IconButton(
           onPressed: () => SessionDataProvider().setSessionId(null),
-          icon: const Icon(Icons.logout,color: whiteColor),
+          icon: const Icon(Icons.logout, color: whiteColor),
         ),
         title: const Image(
           image: AssetImage('assets/images/logo.png'),
@@ -50,10 +58,14 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
       ),
       body: IndexedStack(
         index: _selectedTab,
-        children: const [
-          NewsWidget(),
-          MovieListWidget(),
-          TvShowListWidget(),
+        children: [
+          const NewsWidget(),
+          NotifierProvider(
+            child: const MovieListWidget(),
+            create: () => movieListModel,
+            isManagingModel: false,
+          ),
+          const TvShowListWidget(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

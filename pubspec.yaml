@@ -15,10 +15,16 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   flutter_secure_storage: ^5.0.2
+  json_annotation: ^4.4.0
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  json_serializable:
+  build_runner:
 
   flutter_lints: ^1.0.0
 

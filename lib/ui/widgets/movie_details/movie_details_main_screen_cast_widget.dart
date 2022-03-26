@@ -78,8 +78,7 @@ class MovieDetailsMainScreenCastWidget extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(2.0),
-            child: FlatButton(
-              minWidth: double.maxFinite,
+            child: TextButton(
               onPressed: () {},
               child: AppText(
                   size: 17, text: 'Полный актёрский и съёмочный состав'),
