@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:themoviedb/domain/entity/movie_details.dart';
+import 'package:themoviedb/domain/entity/movie_details_credits.dart';
+import 'package:themoviedb/domain/entity/movie_details_video.dart';
 import 'package:themoviedb/domain/entity/popular_movie_response.dart';
 
 enum ApiClientExceptionType { Network, Auth, Other }
@@ -195,6 +197,42 @@ Future<MovieDetails> movieDetails(int movieId, String locale) async {
 
     final result = _get(
       '/movie/$movieId',
+      parser,
+      {
+        'api_key': _apiKey,
+        'language': locale,
+      },
+    );
+    return result;
+  }
+
+  Future<MovieDetailsCredits> getCastForMovieDetails(int movieId, String locale) async {
+    parser(dynamic json) {
+      final jsonMap = json as Map<String, dynamic>;
+      final response = MovieDetailsCredits.fromJson(jsonMap);
+      return response;
+    }
+
+    final result = _get(
+      '/movie/$movieId/credits',
+      parser,
+      {
+        'api_key': _apiKey,
+        'language': locale,
+      },
+    );
+    return result;
+  }
+
+Future<MovieDetailsVideo> getVideosForMovieDetails(int movieId, String locale) async {
+    parser(dynamic json) {
+      final jsonMap = json as Map<String, dynamic>;
+      final response = MovieDetailsVideo.fromJson(jsonMap);
+      return response;
+    }
+
+    final result = _get(
+      '/movie/$movieId/videos',
       parser,
       {
         'api_key': _apiKey,

@@ -31,6 +31,7 @@ class MovieDetails {
   final bool video;
   final double voteAverage;
   final int voteCount;
+
   const MovieDetails({
     required this.adult,
     required this.backdropPath,
@@ -57,6 +58,7 @@ class MovieDetails {
     required this.video,
     required this.voteAverage,
     required this.voteCount,
+
   });
 
   factory MovieDetails.fromJson(Map<String, dynamic> json) =>

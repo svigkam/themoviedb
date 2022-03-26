@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:themoviedb/Libarary/Widgets/Inherited/provider.dart';
 import 'package:themoviedb/constants/constants.dart';
 import 'package:themoviedb/domain/api_client/api_client.dart';
+import 'package:themoviedb/domain/entity/movie_details_credits.dart';
 import 'package:themoviedb/ui/widgets/movie_details/movie_details_model.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../elements/circle_progress_bar.dart';
 
@@ -22,7 +24,7 @@ class MovieDetailsMainInfoWidget extends StatelessWidget {
             child: _MovieNameWidget(),
           ),
         ),
-        const _ScoreWidget(),
+        const _ScoreAndTrailerWidget(),
         const _SummeryWidget(),
         // overview
         Padding(
@@ -32,7 +34,10 @@ class MovieDetailsMainInfoWidget extends StatelessWidget {
         // overview text
         const _OverViewWidget(),
         const SizedBox(height: 25),
-        const _PeopleWidget(),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: _PeopleWidget(),
+        ),
         const SizedBox(height: 25),
       ],
     );
@@ -124,14 +129,19 @@ class _MovieNameWidget extends StatelessWidget {
   }
 }
 
-class _ScoreWidget extends StatelessWidget {
-  const _ScoreWidget({Key? key}) : super(key: key);
+class _ScoreAndTrailerWidget extends StatelessWidget {
+  const _ScoreAndTrailerWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final model = NotifierProvider.watch<MovieDetailsModel>(context);
     var voteAverage = model?.movieDetails?.voteAverage.toDouble();
     voteAverage != null ? voteAverage = (voteAverage * 10) : voteAverage = 0;
+
+    final videos = model?.movieDetailsVideo?.results
+        .where((video) => video.type == 'Trailer' && video.site == 'YouTube');
+    final trailerKey = videos?.isNotEmpty == true ? videos?.first.key : null;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -159,14 +169,9 @@ class _ScoreWidget extends StatelessWidget {
           width: 1,
           height: 15,
         ),
-        TextButton(
-            onPressed: () {},
-            child: Row(
-              children: const [
-                Icon(Icons.play_arrow),
-                Text('Play Trailer'),
-              ],
-            )),
+        trailerKey != null
+            ? _TrailerWidget(trailerKey: trailerKey)
+            : const SizedBox.shrink(),
       ],
     );
   }
@@ -226,50 +231,135 @@ class _PeopleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = NotifierProvider.watch<MovieDetailsModel>(context);
+    var crew = model?.movieDetailsCast?.crew;
+    if (crew == null || crew.isEmpty) return const SizedBox.shrink();
+    crew = crew.length > 4 ? crew.sublist(0, 4) : crew;
+    var crewChunks = <List<Crew>>[];
+    for (var i = 0; i < crew.length; i += 2) {
+      crewChunks.add(
+        crew.sublist(i, i + 2 > crew.length ? crew.length : i + 2),
+      );
+    }
+
     return Column(
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText(text: 'Stefano Sollima', size: 16, color: whiteColor),
-                AppText(text: 'Director', size: 16, color: whiteColor),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText(text: 'Stefano Sollima', size: 16, color: whiteColor),
-                AppText(text: 'Director', size: 16, color: whiteColor),
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText(text: 'Stefano Sollima', size: 16, color: whiteColor),
-                AppText(text: 'Director', size: 16, color: whiteColor),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText(text: 'Stefano Sollima', size: 16, color: whiteColor),
-                AppText(text: 'Director', size: 16, color: whiteColor),
-              ],
-            ),
-          ],
-        ),
-      ],
+        children: crewChunks
+            .map((chunk) => Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: _PeopleWidgetsRow(crew: chunk),
+                ))
+            .toList());
+  }
+}
+
+class _PeopleWidgetsRow extends StatelessWidget {
+  final List<Crew> crew;
+  const _PeopleWidgetsRow({
+    required this.crew,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: crew.map((e) => _PeopleWidgetsRowItem(crew: e)).toList());
+  }
+}
+
+class _PeopleWidgetsRowItem extends StatelessWidget {
+  final Crew crew;
+  const _PeopleWidgetsRowItem({
+    required this.crew,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AppText(text: crew.name, size: 16, color: whiteColor),
+          AppText(text: crew.job, size: 16, color: whiteColor.withOpacity(.6)),
+        ],
+      ),
     );
   }
+}
+
+class _TrailerWidget extends StatefulWidget {
+  final String trailerKey;
+  const _TrailerWidget({Key? key, required this.trailerKey}) : super(key: key);
+  @override
+  State<_TrailerWidget> createState() => __TrailerWidgetState();
+}
+
+class __TrailerWidgetState extends State<_TrailerWidget> {
+  late final YoutubePlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = YoutubePlayerController(
+        initialVideoId: widget.trailerKey,
+        flags: const YoutubePlayerFlags(
+          autoPlay: true,
+          mute: true,
+        ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
+          ),
+          builder: (BuildContext context) {
+            return _showTrailerBottomSheet(
+              widget.trailerKey,
+              _controller,
+            );
+          },
+        );
+      },
+      child: Row(
+        children: const [
+          Icon(Icons.play_arrow),
+          Text('Play Trailer'),
+        ],
+      ),
+    );
+  }
+}
+
+Widget _showTrailerBottomSheet(
+    String trailerKey, YoutubePlayerController controller) {
+  return Container(
+    decoration: const BoxDecoration(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(25),
+        topRight: Radius.circular(25),
+      ),
+      color: Color.fromRGBO(24, 23, 27, 1),
+    ),
+    // padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+    child: YoutubePlayerBuilder(
+      player: YoutubePlayer(
+        controller: controller,
+        showVideoProgressIndicator: true,
+      ),
+      builder: (context, player) {
+        return player;
+      },
+    ),
+  );
 }

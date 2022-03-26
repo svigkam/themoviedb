@@ -2,17 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:themoviedb/domain/api_client/api_client.dart';
 import 'package:themoviedb/domain/entity/movie_details.dart';
+import 'package:themoviedb/domain/entity/movie_details_credits.dart';
+import 'package:themoviedb/domain/entity/movie_details_video.dart';
 
 class MovieDetailsModel extends ChangeNotifier {
   final _apiClient = ApiClient();
 
   MovieDetails? _movieDetails;
+  MovieDetailsCredits? _movieDetailsCast;
+  MovieDetailsVideo? _movieDetailsVideo;
+
   final int movieId;
-  // late final String _locale;
   late DateFormat _dateFormat;
-  final String _locale = 'ru-RU';
+  late final String _locale = 'ru-RU';
 
   MovieDetails? get movieDetails => _movieDetails;
+  MovieDetailsCredits? get movieDetailsCast => _movieDetailsCast;
+  MovieDetailsVideo? get movieDetailsVideo => _movieDetailsVideo;
 
   String stringFromDate(DateTime? date) =>
       date != null ? _dateFormat.format(date) : '';
@@ -29,6 +35,8 @@ class MovieDetailsModel extends ChangeNotifier {
 
   Future<void> loadDetails() async {
     _movieDetails = await _apiClient.movieDetails(movieId, _locale);
+    _movieDetailsCast = await _apiClient.getCastForMovieDetails(movieId, _locale);
+    _movieDetailsVideo = await _apiClient.getVideosForMovieDetails(movieId, _locale);
     notifyListeners();
   }
 }
