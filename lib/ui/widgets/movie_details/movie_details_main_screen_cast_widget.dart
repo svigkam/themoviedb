@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:themoviedb/Libarary/Widgets/Inherited/provider.dart';
+import 'package:provider/provider.dart';
 import 'package:themoviedb/constants/constants.dart';
-import 'package:themoviedb/domain/api_client/api_client.dart';
+import 'package:themoviedb/domain/api_client/image_downloader.dart';
 import 'package:themoviedb/ui/widgets/movie_details/movie_details_model.dart';
 
 class MovieDetailsMainScreenCastWidget extends StatelessWidget {
@@ -50,8 +50,8 @@ class _CastListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = NotifierProvider.watch<MovieDetailsModel>(context);
-    var length = model!.movieDetailsCast!.cast.length;
+    final model = context.watch<MovieDetailsModel>();
+    var length = model.movieDetailsCast!.cast.length;
 
     var cast = model.movieDetailsCast?.cast;
     if (cast == null || cast.isEmpty) return const SizedBox.shrink();
@@ -75,8 +75,8 @@ class _CastListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = NotifierProvider.read<MovieDetailsModel>(context);
-    var actor = model!.movieDetailsCast!.cast[castIndex];
+    final model = context.read<MovieDetailsModel>();
+    var actor = model.movieDetailsCast!.cast[castIndex];
     final profilePath = actor.profilePath;
 
     return Padding(
@@ -102,7 +102,7 @@ class _CastListItemWidget extends StatelessWidget {
               AspectRatio(
                 aspectRatio: 500 / 750,
                 child: profilePath != null
-                    ? Image.network(ApiClient.imageUrl(profilePath))
+                    ? Image.network(ImageDownloader.imageUrl(profilePath))
                     : Icon(
                         Icons.image_not_supported_outlined,
                         size: 70,

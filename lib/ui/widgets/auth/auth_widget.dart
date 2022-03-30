@@ -1,39 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:themoviedb/Libarary/Widgets/Inherited/provider.dart';
+import 'package:provider/provider.dart';
 import 'package:themoviedb/constants/constants.dart';
 import 'package:themoviedb/ui/widgets/auth/auth_model.dart';
 
-class AuthWidget extends StatefulWidget {
+class AuthWidget extends StatelessWidget {
   const AuthWidget({Key? key}) : super(key: key);
-  @override
-  State<AuthWidget> createState() => _AuthWidgetState();
-}
 
-class _AuthWidgetState extends State<AuthWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.menu, color: whiteColor),
-        ),
         title: const Image(
           image: AssetImage('assets/images/logo.png'),
           fit: BoxFit.fitHeight,
+          width: 200,
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.person, color: whiteColor),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.search, color: secondaryColor),
-          ),
-        ],
       ),
       body: const SafeArea(
         child: SingleChildScrollView(
@@ -83,7 +66,7 @@ class _FormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = NotifierProvider.read<AuthModel>(context);
+    final model = context.read<AuthModel>();
     const textFieldDecorator = InputDecoration(
       border: OutlineInputBorder(),
       contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
@@ -95,7 +78,7 @@ class _FormWidget extends StatelessWidget {
         const SizedBox(height: 5),
         TextField(
           decoration: textFieldDecorator,
-          controller: model?.loginTextController,
+          controller: model.loginTextController,
         ),
         const SizedBox(height: 20),
         AppText(size: 16, text: 'Пароль'),
@@ -103,7 +86,7 @@ class _FormWidget extends StatelessWidget {
         TextField(
           decoration: textFieldDecorator,
           obscureText: true,
-          controller: model?.passwordTextController,
+          controller: model.passwordTextController,
         ),
         const SizedBox(height: 25),
         Row(
@@ -135,10 +118,9 @@ class _AuthButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = NotifierProvider.watch<AuthModel>(context);
-    final onPressed =
-        model?.canStartAuth == true ? () => model?.auth(context) : null;
-    final child = model?.isAuthProgress == true
+    final model = context.watch<AuthModel>();
+    final onPressed = model.canStartAuth ? () => model.auth(context) : null;
+    final child = model.isAuthProgress
         ? const SizedBox(
             height: 16,
             width: 16,
@@ -154,12 +136,13 @@ class _AuthButtonWidget extends StatelessWidget {
             color: whiteColor,
           );
     return TextButton(
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(secondaryColor),
-          padding: MaterialStateProperty.all(
-              const EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
-        ),
-        onPressed: onPressed,
-        child: child);
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(secondaryColor),
+        padding: MaterialStateProperty.all(
+            const EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
+      ),
+      onPressed: onPressed,
+      child: child,
+    );
   }
 }

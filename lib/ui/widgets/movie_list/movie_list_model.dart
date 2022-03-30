@@ -2,31 +2,48 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:themoviedb/domain/api_client/api_client.dart';
+import 'package:themoviedb/domain/api_client/movie_api_client.dart';
 import 'package:themoviedb/domain/entity/movie.dart';
 import 'package:themoviedb/domain/entity/popular_movie_response.dart';
 import 'package:themoviedb/ui/navigation/main_navigation.dart';
 
+class MovieListRowData {
+  final String? title;
+  final String? releaseDate;
+  final String? overview;
+  final String? posterPath;
+  final int? id;
+
+  MovieListRowData({
+    required this.title,
+    required this.releaseDate,
+    required this.overview,
+    required this.posterPath,
+    required this.id,
+  });
+}
+
 class MovieListModel extends ChangeNotifier {
-  final _apiClient = ApiClient();
-  final _movies = <Movie>[];
+  final _apiClient = MovieApiClient();
+  Timer? searchDebounce;
+  String _locale = '';
+
+  final _movies = <MovieListRowData>[];
   late int _currentPage;
   late int _totalPage;
   var _isLoadingInProgress = false;
   String? _searchQuery;
-  Timer? searchDebounce;
 
-  List<Movie> get movies => List.unmodifiable(_movies);
+  List<MovieListRowData> get movies => List.unmodifiable(_movies);
   late DateFormat _dateFormat;
-  final String _locale = 'ru-RU';
 
   String stringFromDate(DateTime? date) =>
       date != null ? _dateFormat.format(date) : '';
 
   Future<void> setupLocale(BuildContext context) async {
-    // final locale = Localizations.localeOf(context).toLanguageTag();
-    // if (_locale == locale) return;
-    // _locale = locale;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    if (_locale == locale) return;
+    _locale = locale;
     _dateFormat = DateFormat.yMMMMd(_locale);
     await _resetList();
   }
@@ -54,7 +71,7 @@ class MovieListModel extends ChangeNotifier {
 
     try {
       final moviesResponse = await _loadMovies(nextPage, _locale);
-      _movies.addAll(moviesResponse.movies);
+      _movies.addAll(moviesResponse.movies.map(_makeRowData).toList());
       _currentPage = moviesResponse.page;
       _totalPage = moviesResponse.totalPages;
       _isLoadingInProgress = false;
@@ -62,6 +79,19 @@ class MovieListModel extends ChangeNotifier {
     } catch (e) {
       _isLoadingInProgress = false;
     }
+  }
+
+  MovieListRowData _makeRowData(Movie movie) {
+    final releaseDate = movie.releaseDate;
+    final releaseDateTitle =
+        releaseDate != null ? _dateFormat.format(releaseDate) : '';
+    return MovieListRowData(
+      title: movie.title,
+      releaseDate: releaseDateTitle,
+      overview: movie.overview,
+      posterPath: movie.posterPath,
+      id: movie.id,
+    );
   }
 
   void onMovieTap(BuildContext context, int index) {

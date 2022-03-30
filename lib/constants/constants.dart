@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 const primaryColor = Color(0xff032541);
 const secondaryColor = Color(0xff01b4e4);
+
 const whiteColor = Colors.white;
 const blackColor = Colors.black;
 const greyColor = Color.fromRGBO(0, 0, 0, .6);
@@ -34,7 +35,6 @@ Widget AppText(
   );
 }
 
-// for displaying snackbars
 showSnackBar(BuildContext context, String text, {Color color = primaryColor}) {
   return ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(

@@ -20,6 +20,8 @@ dependencies:
     sdk: flutter
   intl: ^0.17.0
   youtube_player_flutter: ^8.0.0
+  provider: ^6.0.2
+  flutter_lints: ^1.0.4
 
 dev_dependencies:
   flutter_test:
@@ -27,7 +29,6 @@ dev_dependencies:
   json_serializable:
   build_runner:
 
-  flutter_lints: ^1.0.0
 
 
 flutter:

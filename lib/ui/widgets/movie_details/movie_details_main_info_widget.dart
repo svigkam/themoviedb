@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:themoviedb/Libarary/Widgets/Inherited/provider.dart';
+import 'package:provider/provider.dart';
 import 'package:themoviedb/constants/constants.dart';
-import 'package:themoviedb/domain/api_client/api_client.dart';
+import 'package:themoviedb/domain/api_client/image_downloader.dart';
 import 'package:themoviedb/domain/entity/movie_details_credits.dart';
 import 'package:themoviedb/ui/widgets/movie_details/movie_details_model.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -51,9 +51,9 @@ class _OverViewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = NotifierProvider.watch<MovieDetailsModel>(context);
+    final model = context.watch<MovieDetailsModel>();
 
-    final overview = model?.movieDetails?.overview ?? '';
+    final overview = model.movieDetails?.overview ?? '';
 
     return ColoredBox(
       color: const Color.fromRGBO(22, 21, 25, 1),
@@ -70,22 +70,22 @@ class _TopPostersWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = NotifierProvider.watch<MovieDetailsModel>(context);
-    final backdropPath = model?.movieDetails?.backdropPath;
-    final posterPath = model?.movieDetails?.posterPath;
+    final model = context.watch<MovieDetailsModel>();
+    final backdropPath = model.movieDetails?.backdropPath;
+    final posterPath = model.movieDetails?.posterPath;
     return AspectRatio(
       aspectRatio: 390 / 219,
       child: Stack(
         children: [
           backdropPath != null
-              ? Image.network(ApiClient.imageUrl(backdropPath))
+              ? Image.network(ImageDownloader.imageUrl(backdropPath))
               : const SizedBox.shrink(),
           Positioned(
             top: 20,
             bottom: 20,
             left: 20,
             child: posterPath != null
-                ? Image.network(ApiClient.imageUrl(posterPath))
+                ? Image.network(ImageDownloader.imageUrl(posterPath))
                 : const SizedBox.shrink(),
           ),
           Positioned(
@@ -94,12 +94,12 @@ class _TopPostersWidget extends StatelessWidget {
             child: IconButton(
               icon: Icon(
                 Icons.favorite,
-                color: model?.isFavorite == true
+                color: model.isFavorite == true
                     ? Colors.red
                     : Colors.white.withOpacity(.5),
                 size: 30,
               ),
-              onPressed: () => model?.toggleFavorite(context),
+              onPressed: () => model.toggleFavorite(context),
             ),
           )
         ],
@@ -113,8 +113,8 @@ class _MovieNameWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = NotifierProvider.watch<MovieDetailsModel>(context);
-    var year = model?.movieDetails?.releaseDate?.year.toString();
+    final model = context.watch<MovieDetailsModel>();
+    var year = model.movieDetails?.releaseDate?.year.toString();
     year != null ? year = ' ($year)' : '';
     return RichText(
       maxLines: 3,
@@ -122,7 +122,7 @@ class _MovieNameWidget extends StatelessWidget {
       text: TextSpan(
         children: [
           TextSpan(
-            text: model?.movieDetails?.title ?? '',
+            text: model.movieDetails?.title ?? '',
             style: const TextStyle(
               color: whiteColor,
               fontSize: 21,
@@ -148,11 +148,11 @@ class _ScoreAndTrailerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = NotifierProvider.watch<MovieDetailsModel>(context);
-    var voteAverage = model?.movieDetails?.voteAverage.toDouble();
+    final model = context.watch<MovieDetailsModel>();
+    var voteAverage = model.movieDetails?.voteAverage.toDouble();
     voteAverage != null ? voteAverage = (voteAverage * 10) : voteAverage = 0;
 
-    final videos = model?.movieDetailsVideo?.results
+    final videos = model.movieDetailsVideo?.results
         .where((video) => video.type == 'Trailer' && video.site == 'YouTube');
     final trailerKey = videos?.isNotEmpty == true ? videos?.first.key : null;
 
@@ -196,27 +196,27 @@ class _SummeryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = NotifierProvider.watch<MovieDetailsModel>(context);
+    final model = context.watch<MovieDetailsModel>();
     var texts = <String>[];
 
-    final releaseDate = model?.movieDetails?.releaseDate;
+    final releaseDate = model.movieDetails?.releaseDate;
     if (releaseDate != null) {
-      texts.add(model!.stringFromDate(releaseDate));
+      texts.add(model.stringFromDate(releaseDate));
     }
 
-    final productionCountries = model?.movieDetails?.productionCountries;
+    final productionCountries = model.movieDetails?.productionCountries;
     if (productionCountries != null && productionCountries.isNotEmpty) {
       texts.add('(${productionCountries.first.iso})');
     }
 
-    final runtime = model?.movieDetails?.runtime ?? 0;
+    final runtime = model.movieDetails?.runtime ?? 0;
     final duration = Duration(minutes: runtime);
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
     texts.add('${hours}h ${minutes}m');
 
     var genresNames = [];
-    final genres = model?.movieDetails?.genres;
+    final genres = model.movieDetails?.genres;
     if (genres != null && genres.isNotEmpty) {
       for (var genre in genres) {
         genresNames.add(genre.name);
@@ -245,8 +245,8 @@ class _PeopleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = NotifierProvider.watch<MovieDetailsModel>(context);
-    var crew = model?.movieDetailsCast?.crew;
+    final model = context.watch<MovieDetailsModel>();
+    var crew = model.movieDetailsCast?.crew;
     if (crew == null || crew.isEmpty) return const SizedBox.shrink();
     crew = crew.length > 4 ? crew.sublist(0, 4) : crew;
     var crewChunks = <List<Crew>>[];
