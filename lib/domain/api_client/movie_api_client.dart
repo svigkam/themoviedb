@@ -8,7 +8,7 @@ import 'package:themoviedb/domain/entity/popular_movie_response.dart';
 class MovieApiClient {
   final _networkClient = NetworkClient();
 
-  Future<PopularMovieResponse> popularMovie(int page, String locale) async {
+  Future<PopularMovieResponse> popularMovie(int page, String locale, String apiKey) async {
     parser(dynamic json) {
       final jsonMap = json as Map<String, dynamic>;
       final response = PopularMovieResponse.fromJson(jsonMap);
@@ -18,7 +18,7 @@ class MovieApiClient {
       '/movie/popular',
       parser,
       {
-        'api_key': Configuration.apiKey,
+        'api_key': apiKey,
         'page': page.toString(),
         'language': locale,
       },
@@ -27,7 +27,7 @@ class MovieApiClient {
   }
 
   Future<PopularMovieResponse> searchMovie(
-      int page, String locale, String query) async {
+      int page, String locale, String query, String apiKey) async {
     parser(dynamic json) {
       final jsonMap = json as Map<String, dynamic>;
       final response = PopularMovieResponse.fromJson(jsonMap);
@@ -37,7 +37,7 @@ class MovieApiClient {
       '/search/movie',
       parser,
       {
-        'api_key': Configuration.apiKey,
+        'api_key': apiKey,
         'page': page.toString(),
         'language': locale,
         'query': query,

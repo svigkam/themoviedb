@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:themoviedb/constants/constants.dart';
-import 'package:themoviedb/domain/data_providers/session_data_provider.dart';
 import 'package:themoviedb/domain/factories/screen_factory.dart';
-
 
 class MainScreenWidget extends StatefulWidget {
   const MainScreenWidget({Key? key}) : super(key: key);
@@ -27,7 +25,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
       appBar: AppBar(
         backgroundColor: primaryColor,
         leading: IconButton(
-          onPressed: () => SessionDataProvider().setSessionId(null),
+          onPressed: () {},
           icon: const Icon(Icons.logout, color: whiteColor),
         ),
         title: const Image(

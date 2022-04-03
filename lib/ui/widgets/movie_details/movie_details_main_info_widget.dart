@@ -15,52 +15,44 @@ class MovieDetailsMainInfoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const _TopPostersWidget(),
-        const Align(
-          alignment: Alignment.center,
-          child: Padding(
-            padding: EdgeInsets.all(20.0),
-            child: _MovieNameWidget(),
-          ),
-        ),
-        const _ScoreAndTrailerWidget(),
-        const _SummeryWidget(),
-        // overview
+      children: const [
+        _TopPostersWidget(),
+        _MovieNameWidget(),
+        _ScoreAndTrailerWidget(),
+        _SummeryWidget(),
+        _OverViewWidget(),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-          child: AppText(text: 'Описание', size: 18, color: whiteColor),
-        ),
-        // overview text
-        const _OverViewWidget(),
-        const SizedBox(height: 25),
-        const Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: _PeopleWidget(),
         ),
-        const SizedBox(height: 25),
+        SizedBox(height: 25),
       ],
     );
   }
 }
 
 class _OverViewWidget extends StatelessWidget {
-  const _OverViewWidget({
-    Key? key,
-  }) : super(key: key);
-
+  const _OverViewWidget({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<MovieDetailsModel>();
-
-    final overview = model.movieDetails?.overview ?? '';
-
-    return ColoredBox(
-      color: const Color.fromRGBO(22, 21, 25, 1),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        child: AppText(color: whiteColor, size: 16, text: overview),
-      ),
+    final overview =
+        context.select((MovieDetailsModel model) => model.data.overview);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          child: AppText(text: 'Описание', size: 18, color: whiteColor),
+        ),
+        ColoredBox(
+          color: const Color.fromRGBO(22, 21, 25, 1),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+            child: AppText(color: whiteColor, size: 16, text: overview),
+          ),
+        ),
+        const SizedBox(height: 25),
+      ],
     );
   }
 }
@@ -70,24 +62,24 @@ class _TopPostersWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<MovieDetailsModel>();
-    final backdropPath = model.movieDetails?.backdropPath;
-    final posterPath = model.movieDetails?.posterPath;
+    final model = context.read<MovieDetailsModel>();
+    final posterData =
+        context.select((MovieDetailsModel model) => model.data.posterData);
     return AspectRatio(
       aspectRatio: 390 / 219,
       child: Stack(
         children: [
-          backdropPath != null
-              ? Image.network(ImageDownloader.imageUrl(backdropPath))
-              : const SizedBox.shrink(),
-          Positioned(
-            top: 20,
-            bottom: 20,
-            left: 20,
-            child: posterPath != null
-                ? Image.network(ImageDownloader.imageUrl(posterPath))
-                : const SizedBox.shrink(),
-          ),
+          if (posterData.backdropPath != null)
+            Image.network(ImageDownloader.imageUrl(posterData.backdropPath!)),
+          if (posterData.posterPath != null)
+            Positioned(
+              top: 20,
+              bottom: 20,
+              left: 20,
+              child: Image.network(
+                ImageDownloader.imageUrl(posterData.posterPath!),
+              ),
+            ),
           Positioned(
             top: 20,
             right: 20,
@@ -113,31 +105,36 @@ class _MovieNameWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<MovieDetailsModel>();
-    var year = model.movieDetails?.releaseDate?.year.toString();
-    year != null ? year = ' ($year)' : '';
-    return RichText(
-      maxLines: 3,
-      textAlign: TextAlign.center,
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: model.movieDetails?.title ?? '',
-            style: const TextStyle(
-              color: whiteColor,
-              fontSize: 21,
-              fontWeight: FontWeight.w800,
-            ),
+    final nameData =
+        context.select((MovieDetailsModel model) => model.data.nameData);
+    return Align(
+      alignment: Alignment.center,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: RichText(
+          maxLines: 3,
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: nameData.title,
+                style: const TextStyle(
+                  color: whiteColor,
+                  fontSize: 21,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              TextSpan(
+                text: nameData.year,
+                style: const TextStyle(
+                  color: whiteColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
           ),
-          TextSpan(
-            text: year,
-            style: const TextStyle(
-              color: whiteColor,
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -148,13 +145,10 @@ class _ScoreAndTrailerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<MovieDetailsModel>();
-    var voteAverage = model.movieDetails?.voteAverage.toDouble();
-    voteAverage != null ? voteAverage = (voteAverage * 10) : voteAverage = 0;
-
-    final videos = model.movieDetailsVideo?.results
-        .where((video) => video.type == 'Trailer' && video.site == 'YouTube');
-    final trailerKey = videos?.isNotEmpty == true ? videos?.first.key : null;
+    final scoreData =
+        context.select((MovieDetailsModel model) => model.data.scoreData);
+    final voteAverage = scoreData.voteAvarage * 10;
+    final trailerKey = scoreData.trailerKey;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -185,7 +179,23 @@ class _ScoreAndTrailerWidget extends StatelessWidget {
         ),
         trailerKey != null
             ? _TrailerWidget(trailerKey: trailerKey)
-            : const SizedBox.shrink(),
+            : TextButton(
+                onPressed: () {},
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.play_arrow,
+                      color: Colors.grey,
+                    ),
+                    AppText(
+                      size: 14,
+                      text: 'Play Trailer',
+                      color: Colors.grey,
+                      lineThrough: true,
+                    )
+                  ],
+                ),
+              )
       ],
     );
   }
@@ -196,27 +206,30 @@ class _SummeryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<MovieDetailsModel>();
     var texts = <String>[];
 
-    final releaseDate = model.movieDetails?.releaseDate;
+    final model = context.read<MovieDetailsModel>();
+    var movieDetails =
+        context.select((MovieDetailsModel model) => model.movieDetails);
+
+    final releaseDate = movieDetails?.releaseDate;
     if (releaseDate != null) {
       texts.add(model.stringFromDate(releaseDate));
     }
 
-    final productionCountries = model.movieDetails?.productionCountries;
+    final productionCountries = movieDetails?.productionCountries;
     if (productionCountries != null && productionCountries.isNotEmpty) {
       texts.add('(${productionCountries.first.iso})');
     }
 
-    final runtime = model.movieDetails?.runtime ?? 0;
+    final runtime = movieDetails?.runtime ?? 0;
     final duration = Duration(minutes: runtime);
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
     texts.add('${hours}h ${minutes}m');
 
     var genresNames = [];
-    final genres = model.movieDetails?.genres;
+    final genres = movieDetails?.genres;
     if (genres != null && genres.isNotEmpty) {
       for (var genre in genres) {
         genresNames.add(genre.name);
@@ -224,7 +237,6 @@ class _SummeryWidget extends StatelessWidget {
       genresNames.join(', ');
       texts.add(genresNames.join(', '));
     }
-
     return ColoredBox(
       color: const Color.fromRGBO(22, 21, 25, 1),
       child: Padding(
@@ -255,30 +267,30 @@ class _PeopleWidget extends StatelessWidget {
         crew.sublist(i, i + 2 > crew.length ? crew.length : i + 2),
       );
     }
-
     return Column(
-        children: crewChunks
-            .map((chunk) => Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: _PeopleWidgetsRow(crew: chunk),
-                ))
-            .toList());
+      children: crewChunks
+          .map(
+            (chunk) => Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: _PeopleWidgetsRow(crew: chunk),
+            ),
+          )
+          .toList(),
+    );
   }
 }
 
 class _PeopleWidgetsRow extends StatelessWidget {
   final List<Crew> crew;
-  const _PeopleWidgetsRow({
-    required this.crew,
-    Key? key,
-  }) : super(key: key);
+  const _PeopleWidgetsRow({required this.crew, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: crew.map((e) => _PeopleWidgetsRowItem(crew: e)).toList());
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: crew.map((e) => _PeopleWidgetsRowItem(crew: e)).toList(),
+    );
   }
 }
 
@@ -317,11 +329,12 @@ class __TrailerWidgetState extends State<_TrailerWidget> {
   void initState() {
     super.initState();
     _controller = YoutubePlayerController(
-        initialVideoId: widget.trailerKey,
-        flags: const YoutubePlayerFlags(
-          autoPlay: true,
-          mute: true,
-        ));
+      initialVideoId: widget.trailerKey,
+      flags: const YoutubePlayerFlags(
+        autoPlay: true,
+        mute: false,
+      ),
+    );
   }
 
   @override
@@ -359,13 +372,12 @@ Widget _showTrailerBottomSheet(
     String trailerKey, YoutubePlayerController controller) {
   return Container(
     decoration: const BoxDecoration(
+      color: Color.fromRGBO(24, 23, 27, 1),
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(25),
         topRight: Radius.circular(25),
       ),
-      color: Color.fromRGBO(24, 23, 27, 1),
     ),
-    // padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
     child: YoutubePlayerBuilder(
       player: YoutubePlayer(
         controller: controller,

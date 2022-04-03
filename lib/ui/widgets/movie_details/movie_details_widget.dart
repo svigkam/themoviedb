@@ -13,18 +13,9 @@ class MovieDetailsWidget extends StatefulWidget {
 }
 
 class _MovieDetailsWidgetState extends State<MovieDetailsWidget> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   final model = context.read<MovieDetailsModel>();
-  //   final appModel = context.read<MyAppModel>();
-  //   model.onSessionExpired = () => appModel.resetSession(context);
-  // }
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     context.read<MovieDetailsModel>().setupLocale(context);
   }
 
@@ -58,20 +49,20 @@ class _MovieDetailsWidgetState extends State<MovieDetailsWidget> {
 }
 
 class _BodyWidget extends StatelessWidget {
-  const _BodyWidget({
-    Key? key,
-  }) : super(key: key);
+  const _BodyWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<MovieDetailsModel>();
-    final movieDetails = model.movieDetails;
-    if (movieDetails == null) {
+    final isLoading =
+        context.select((MovieDetailsModel model) => model.data.isLoading);
+    if (isLoading == true) {
       return const Center(child: CircularProgressIndicator());
     }
-    return ListView(children: const [
-      MovieDetailsMainInfoWidget(),
-      MovieDetailsMainScreenCastWidget(),
-    ]);
+    return ListView(
+      children: const [
+        MovieDetailsMainInfoWidget(),
+        MovieDetailsMainScreenCastWidget(),
+      ],
+    );
   }
 }

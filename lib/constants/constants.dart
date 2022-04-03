@@ -21,6 +21,7 @@ Widget AppText(
     required String text,
     int maxLines = 0,
     bool overflow = false,
+    bool lineThrough = false,
     bool alignCenter = false}) {
   return Text(
     text,
@@ -31,6 +32,7 @@ Widget AppText(
       color: color,
       fontSize: size,
       fontWeight: isBold,
+      decoration: lineThrough?TextDecoration.lineThrough:null
     ),
   );
 }
