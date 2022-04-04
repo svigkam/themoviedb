@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:themoviedb/domain/entity/movie.dart';
-import 'package:themoviedb/domain/entity/popular_movie_response.dart';
 import 'package:themoviedb/domain/services/movie_service.dart';
-import 'package:themoviedb/domain/services/paginator.dart';
 import 'package:themoviedb/ui/navigation/main_navigation.dart';
 
 class MovieListRowData {
@@ -13,6 +11,7 @@ class MovieListRowData {
   final String? backdropPath;
   final int? id;
   final double? voteAvarage;
+  final String? overview;
 
   MovieListRowData({
     required this.backdropPath,
@@ -21,6 +20,7 @@ class MovieListRowData {
     required this.posterPath,
     required this.id,
     required this.voteAvarage,
+    required this.overview,
   });
 }
 
@@ -34,6 +34,8 @@ class NewsModel extends ChangeNotifier {
   List<MovieListRowData> get playingMovies => _playingMovies;
   var _popularMovies = <MovieListRowData>[];
   List<MovieListRowData> get popularMovies => _popularMovies;
+  var _upcomingMovies = <MovieListRowData>[];
+  List<MovieListRowData> get upcomingMovies => _upcomingMovies;
 
   NewsModel() {
     _getMovies();
@@ -52,6 +54,10 @@ class NewsModel extends ChangeNotifier {
 
     final popularMovies = await _movieService.popularMovie(1, 'ru-RU');
     _popularMovies = popularMovies.movies.map(_makeRowData).toList();
+
+    final upcomingMovies = await _movieService.upcoming('ru-RU');
+    _upcomingMovies = upcomingMovies.movies.map(_makeRowData).toList();
+
     notifyListeners();
   }
 
@@ -66,6 +72,7 @@ class NewsModel extends ChangeNotifier {
       id: movie.id,
       voteAvarage: movie.voteAverage,
       backdropPath: movie.backdropPath,
+      overview: movie.overview,
     );
   }
 

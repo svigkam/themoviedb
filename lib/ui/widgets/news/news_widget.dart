@@ -1,9 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:themoviedb/constants/constants.dart';
 import 'package:themoviedb/domain/api_client/image_downloader.dart';
-import 'package:themoviedb/resources/resources.dart';
 import 'package:themoviedb/ui/widgets/elements/circle_progress_bar.dart';
 import 'package:themoviedb/ui/widgets/news/news_model.dart';
 
@@ -27,16 +27,17 @@ class _NewsWidgetState extends State<NewsWidget> {
         ? SafeArea(
             child: ListView(
               physics: const BouncingScrollPhysics(),
-              children: [
-                const _TrailersWidget(),
-                const SizedBox(height: 20),
-                const _NowPlayingWidget(),
+              children: const [
+                _TrailersWidget(),
+                SizedBox(height: 20),
+                _NowPlayingWidget(),
+                _PopularsWidget(),
+
                 // _TabsWidget(),
-                const _PopularsWidget(),
               ],
             ),
           )
-        : Center(child: CircularProgressIndicator());
+        : const Center(child: SpinKitSpinningLines(color: purple));
   }
 }
 
@@ -61,33 +62,99 @@ class _TrailersWidget extends StatelessWidget {
         enlargeCenterPage: false,
         scrollDirection: Axis.horizontal,
       ),
-      items: model.popularMovies.map((i) {
+      items: model.upcomingMovies.map((movie) {
         return Builder(
           builder: (BuildContext context) {
-            return Container(
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(
-                    ImageDownloader.imageUrl(
-                      i.backdropPath!,
+            return Stack(
+              children: [
+                Container(
+                  height: 300,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: NetworkImage(movie.backdropPath != null
+                            ? ImageDownloader.imageUrl(movie.backdropPath!)
+                            : 'https://assets.atlanticbt.com/content/uploads/2016/02/404_atlanticbt_blog-1140x510.jpg'),
+                        fit: BoxFit.cover),
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          background,
+                          Colors.transparent,
+                        ],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                      ),
                     ),
                   ),
-                  fit: BoxFit.cover,
                 ),
-                gradient: LinearGradient(
-                  colors: [background, Colors.transparent],
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                              color: blackColor.withOpacity(.4),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ]),
+                          child: AppText(
+                            size: 16,
+                            text: movie.releaseDate!,
+                            color: primaryText.withAlpha(220),
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Container(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                              color: blackColor.withOpacity(.4),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ]),
+                          child: AppText(
+                              size: 24,
+                              text: movie.title!,
+                              isBold: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                              color: blackColor.withOpacity(.4),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ]),
+                          child: AppText(
+                            overflow: true,
+                            size: 16,
+                            maxLines: 3,
+                            text:
+                                movie.overview!,
+                            color: primaryText.withAlpha(200),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              child: Text(
-                i.title! + '//\n///В РАЗРАБОТКЕ',
-                style: const TextStyle(
-                    fontSize: 32.0,
-                    color: Colors.white,
-                    backgroundColor: Colors.black),
-              ),
+              ],
             );
           },
         );

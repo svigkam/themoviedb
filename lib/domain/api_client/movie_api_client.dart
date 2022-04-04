@@ -43,14 +43,31 @@ class MovieApiClient {
     return result;
   }
 
-  Future<PopularMovieResponse> latestMovies(String locale, String apiKey) async {
+  // Future<PopularMovieResponse> latestMovies(String locale, String apiKey) async {
+  //   parser(dynamic json) {
+  //     final jsonMap = json as Map<String, dynamic>;
+  //     final response = PopularMovieResponse.fromJson(jsonMap);
+  //     return response;
+  //   }
+  //   final result = _networkClient.get(
+  //     '/movie/latest',
+  //     parser,
+  //     {
+  //       'api_key': apiKey,
+  //       'language': locale,
+  //     },
+  //   );
+  //   return result;
+  // }
+
+  Future<PopularMovieResponse>upcomingMovies(String locale, String apiKey) async {
     parser(dynamic json) {
       final jsonMap = json as Map<String, dynamic>;
       final response = PopularMovieResponse.fromJson(jsonMap);
       return response;
     }
     final result = _networkClient.get(
-      '/movie/latest',
+      '/movie/upcoming',
       parser,
       {
         'api_key': apiKey,
@@ -59,6 +76,7 @@ class MovieApiClient {
     );
     return result;
   }
+
 
   Future<PopularMovieResponse> searchMovie(
       int page, String locale, String query, String apiKey) async {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:themoviedb/constants/constants.dart';
 import 'package:themoviedb/ui/widgets/movie_details/movie_details_model.dart';
 
 import 'movie_details_main_info_widget.dart';
-
 
 class MovieDetailsWidget extends StatefulWidget {
   const MovieDetailsWidget({Key? key}) : super(key: key);
@@ -78,7 +78,7 @@ class _BodyWidget extends StatelessWidget {
     final isLoading =
         context.select((MovieDetailsModel model) => model.data.isLoading);
     if (isLoading == true) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: SpinKitSpinningLines(color: purple));
     }
     return ListView(
       children: const [

@@ -8,11 +8,16 @@ class MovieService {
   Future<PopularMovieResponse> popularMovie(int page, String locale) async =>
       _movieApiClient.popularMovies(page, locale, Configuration.apiKey);
 
+  /* API Запрос не работает, сайт выдает чушь.
   Future<PopularMovieResponse> latestMovies(String locale) async =>
       _movieApiClient.latestMovies(locale, Configuration.apiKey);
+      */
 
   Future<PopularMovieResponse> playingMovies(String locale) async =>
       _movieApiClient.nowPlayingMovies(locale, Configuration.apiKey);
+
+      Future<PopularMovieResponse> upcoming(String locale) async =>
+      _movieApiClient.upcomingMovies(locale, Configuration.apiKey);
 
   Future<PopularMovieResponse> searchMovie(
           int page, String locale, String query) async =>
