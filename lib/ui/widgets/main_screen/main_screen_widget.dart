@@ -49,8 +49,8 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
             label: 'Поиск',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.tv),
-            label: 'Сериалы',
+            icon: Icon(Icons.person),
+            label: 'Профиль',
           ),
         ],
         onTap: onSelectTab,

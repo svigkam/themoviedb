@@ -9,6 +9,7 @@ import 'package:themoviedb/ui/widgets/movie_details/movie_details_model.dart';
 import 'package:themoviedb/ui/widgets/movie_details/movie_details_widget.dart';
 import 'package:themoviedb/ui/widgets/movie_list/movie_list_model.dart';
 import 'package:themoviedb/ui/widgets/movie_list/movie_list_widget.dart';
+import 'package:themoviedb/ui/widgets/news/news_model.dart';
 import 'package:themoviedb/ui/widgets/news/news_widget.dart';
 import 'package:themoviedb/ui/widgets/tv_show_list/tv_show_list_widget.dart';
 
@@ -40,7 +41,10 @@ class ScreenFactory {
   }
 
   Widget makeNewsList() {
-    return const NewsWidget();
+    return ChangeNotifierProvider(
+      create: (_) => NewsModel(),
+      child: const NewsWidget(),
+    );
   }
 
   Widget makeMovieList() {

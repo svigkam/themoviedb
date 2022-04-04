@@ -52,7 +52,7 @@ class MovieListModel extends ChangeNotifier {
     });
     _searchMoviePaginator = Paginator<Movie>((page) async {
       final result =
-          await _movieService.searchMovie(page, _locale, _searchQuery ?? '');
+          await _movieService.searchMovie(page, _locale, _searchQuery ?? 'sa');
       return PaginatorLoadResult(
         data: result.movies,
         currentPage: result.page,

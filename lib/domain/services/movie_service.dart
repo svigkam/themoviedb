@@ -6,7 +6,13 @@ class MovieService {
   final _movieApiClient = MovieApiClient();
 
   Future<PopularMovieResponse> popularMovie(int page, String locale) async =>
-      _movieApiClient.popularMovie(page, locale, Configuration.apiKey);
+      _movieApiClient.popularMovies(page, locale, Configuration.apiKey);
+
+  Future<PopularMovieResponse> latestMovies(String locale) async =>
+      _movieApiClient.latestMovies(locale, Configuration.apiKey);
+
+  Future<PopularMovieResponse> playingMovies(String locale) async =>
+      _movieApiClient.nowPlayingMovies(locale, Configuration.apiKey);
 
   Future<PopularMovieResponse> searchMovie(
           int page, String locale, String query) async =>

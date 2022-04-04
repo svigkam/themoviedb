@@ -85,53 +85,56 @@ class _MovieMainDataWidget extends StatelessWidget {
       padding: const EdgeInsets.only(top: 140, left: 20, right: 20),
       child: SizedBox(
         height: 200,
-        child: Row(children: [
-          Positioned(
-            top: 20,
-            bottom: 20,
-            left: 20,
-            child: Image.network(
-              ImageDownloader.imageUrl(mainData.posterPath!),
+        child: Row(
+          children: [
+            Positioned(
+              top: 20,
+              bottom: 20,
+              left: 20,
+              child: Image.network(
+                ImageDownloader.imageUrl(mainData.posterPath!),
+              ),
             ),
-          ),
-          const SizedBox(width: 15),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: 180,
-                child: AppText(
-                  size: 22,
-                  text: mainData.title ?? '',
-                  isBold: FontWeight.bold,
+            const SizedBox(width: 15),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 190,
+                  child: AppText(
+                    size: 22,
+                    text: mainData.title ?? '',
+                    isBold: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  AppText(size: 16, text: mainData.year ?? ''),
-                  const SizedBox(width: 15),
-                  AppText(size: 16, text: mainData.time ?? ''),
-                ],
-              ),
-              const SizedBox(height: 5),
-              AppText(
-                  size: 16, text: 'Оценили ${mainData.voteCount!.round()} раз'),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  AppText(size: 19, text: mainData.voteAvarage.toString()),
-                  const Icon(Icons.star, color: Colors.amber),
-                  const Icon(Icons.star, color: Colors.amber),
-                  const Icon(Icons.star, color: Colors.amber),
-                  const Icon(Icons.star, color: Colors.amber),
-                  const Icon(Icons.star, color: Colors.amber),
-                ],
-              )
-            ],
-          )
-        ]),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    AppText(size: 16, text: mainData.year ?? ''),
+                    const SizedBox(width: 15),
+                    AppText(size: 16, text: mainData.time ?? ''),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                AppText(
+                    size: 16,
+                    text: 'Оценили ${mainData.voteCount!.round()} раз'),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    AppText(size: 19, text: mainData.voteAvarage.toString()),
+                    const Icon(Icons.star, color: Colors.amber),
+                    const Icon(Icons.star, color: Colors.amber),
+                    const Icon(Icons.star, color: Colors.amber),
+                    const Icon(Icons.star, color: Colors.amber),
+                    const Icon(Icons.star, color: Colors.amber),
+                  ],
+                )
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

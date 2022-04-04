@@ -126,29 +126,6 @@ class MovieDetailsModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // String makeSummary(MovieDetails details) {
-  //   var result = <String>[];
-
-  //   final releaseDate = details.releaseDate;
-  //   if (releaseDate != null) result.add(stringFromDate(releaseDate));
-
-  //   final productionCountries = details.productionCountries;
-  //   if (productionCountries.isNotEmpty) {
-  //     result.add('(${productionCountries.first.iso})');
-  //   }
-
-  //   var genresNames = [];
-  //   final genres = details.genres;
-  //   if (genres.isNotEmpty) {
-  //     for (var genre in genres) {
-  //       genresNames.add(genre.name);
-  //     }
-  //     genresNames.join(', ');
-  //     result.add(genresNames.join(', '));
-  //   }
-  //   return result.join(' ');
-  // }
-
   Future<void> toggleFavorite(BuildContext context) async {
     final accountId = await _sessionDataProvider.getAccountId();
     final sessionId = await _sessionDataProvider.getSessionId();

@@ -36,7 +36,7 @@ class _SearchWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<MovieListModel>();
+    final model = context.read<MovieListModel>();
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: TextField(
