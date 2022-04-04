@@ -1,16 +1,8 @@
-# themoviedb
+# TheMovieDB API
 
-A new Flutter project.
+| First Header  | Second Header | First Header  |
+| ------------- | ------------- | ------------- |
+| ![Screenshot_1648994076](https://user-images.githubusercontent.com/63847876/161431464-c6e88a59-8063-4835-b98e-996506ef154c.png)  |  ![Screenshot_1648994088](https://user-images.githubusercontent.com/63847876/161431466-31396456-4a48-42ab-9fd0-77aab01da6ce.png)  | ![Screenshot_1648994108](https://user-images.githubusercontent.com/63847876/161431467-2b753e01-69c4-4155-bbb8-49da6fdeb888.png)  
+| ![Screenshot_1648994068](https://user-images.githubusercontent.com/63847876/161431462-afd307bc-6560-4ed2-affd-9027c3004f10.png)  | ![Screenshot_1648994141](https://user-images.githubusercontent.com/63847876/161431468-ebbed6ff-1242-4fc7-898b-8c21fdb6756d.png) 
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
