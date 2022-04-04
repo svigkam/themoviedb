@@ -5,8 +5,6 @@ import 'package:themoviedb/domain/api_client/image_downloader.dart';
 import 'package:themoviedb/ui/widgets/movie_details/movie_details_model.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-import '../elements/circle_progress_bar.dart';
-
 class MovieDetailsMainInfoWidget extends StatelessWidget {
   const MovieDetailsMainInfoWidget({Key? key}) : super(key: key);
 
@@ -15,17 +13,126 @@ class MovieDetailsMainInfoWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: const [
-        _TopPostersWidget(),
-        _MovieNameWidget(),
-        _ScoreAndTrailerWidget(),
-        _SummaryWidget(),
+        _PosterAndDataWidget(),
         _OverViewWidget(),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: _PeopleWidget(),
-        ),
-        SizedBox(height: 25),
+        _CastListWidget(),
+        _ButtonsRowWidget(),
+        SizedBox(height: 30),
       ],
+    );
+  }
+}
+
+class _PosterAndDataWidget extends StatelessWidget {
+  const _PosterAndDataWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: const [
+        _BackdropPosterWidget(),
+        _MovieMainDataWidget(),
+      ],
+    );
+  }
+}
+
+class _BackdropPosterWidget extends StatelessWidget {
+  const _BackdropPosterWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final posterData =
+        context.select((MovieDetailsModel model) => model.data.posterData);
+    final trailerKey = posterData.trailerKey;
+    if (posterData.backdropPath != null) {
+      return AspectRatio(
+        aspectRatio: 390 / 219,
+        child: Stack(
+          children: [
+            Image.network(
+              ImageDownloader.imageUrl(
+                posterData.backdropPath!,
+              ),
+            ),
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [background, Colors.transparent],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
+              ),
+            ),
+            if (trailerKey != null) _TrailerWidget(trailerKey: trailerKey)
+          ],
+        ),
+      );
+    } else {
+      return const AspectRatio(aspectRatio: 390 / 219);
+    }
+  }
+}
+
+class _MovieMainDataWidget extends StatelessWidget {
+  const _MovieMainDataWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final mainData =
+        context.select((MovieDetailsModel model) => model.data.mainData);
+    return Padding(
+      padding: const EdgeInsets.only(top: 140, left: 20, right: 20),
+      child: SizedBox(
+        height: 200,
+        child: Row(children: [
+          Positioned(
+            top: 20,
+            bottom: 20,
+            left: 20,
+            child: Image.network(
+              ImageDownloader.imageUrl(mainData.posterPath!),
+            ),
+          ),
+          const SizedBox(width: 15),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 180,
+                child: AppText(
+                  size: 22,
+                  text: mainData.title ?? '',
+                  isBold: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  AppText(size: 16, text: mainData.year ?? ''),
+                  const SizedBox(width: 15),
+                  AppText(size: 16, text: mainData.time ?? ''),
+                ],
+              ),
+              const SizedBox(height: 5),
+              AppText(
+                  size: 16, text: 'Оценили ${mainData.voteCount!.round()} раз'),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  AppText(size: 19, text: mainData.voteAvarage.toString()),
+                  const Icon(Icons.star, color: Colors.amber),
+                  const Icon(Icons.star, color: Colors.amber),
+                  const Icon(Icons.star, color: Colors.amber),
+                  const Icon(Icons.star, color: Colors.amber),
+                  const Icon(Icons.star, color: Colors.amber),
+                ],
+              )
+            ],
+          )
+        ]),
+      ),
     );
   }
 }
@@ -39,240 +146,149 @@ class _OverViewWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-          child: AppText(text: 'Описание', size: 18, color: whiteColor),
-        ),
-        ColoredBox(
-          color: const Color.fromRGBO(22, 21, 25, 1),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-            child: AppText(color: whiteColor, size: 16, text: overview),
-          ),
-        ),
         const SizedBox(height: 25),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+          child: AppText(color: whiteColor, size: 17, text: overview),
+        ),
       ],
     );
   }
 }
 
-class _TopPostersWidget extends StatelessWidget {
-  const _TopPostersWidget({Key? key}) : super(key: key);
+class _CastListWidget extends StatelessWidget {
+  const _CastListWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final model = context.watch<MovieDetailsModel>();
+    var length = model.movieDetailsCast!.cast.length;
+    var cast = model.movieDetailsCast?.cast;
+    if (cast == null || cast.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child:
+              AppText(size: 22, text: 'Cast & Crew', isBold: FontWeight.w400),
+        ),
+        SizedBox(
+          height: 200,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: ListView.builder(
+              itemCount: length,
+              itemExtent: 120,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (BuildContext context, int index) {
+                return _CastListItemWidget(castIndex: index);
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CastListItemWidget extends StatelessWidget {
+  final int castIndex;
+  const _CastListItemWidget({required this.castIndex, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final model = context.read<MovieDetailsModel>();
-    final posterData =
-        context.select((MovieDetailsModel model) => model.data.posterData);
-    return AspectRatio(
-      aspectRatio: 390 / 219,
-      child: Stack(
-        children: [
-          if (posterData.backdropPath != null)
-            Image.network(ImageDownloader.imageUrl(posterData.backdropPath!)),
-          if (posterData.posterPath != null)
-            Positioned(
-              top: 20,
-              bottom: 20,
-              left: 20,
-              child: Image.network(
-                ImageDownloader.imageUrl(posterData.posterPath!),
-              ),
-            ),
-          Positioned(
-            top: 20,
-            right: 20,
-            child: IconButton(
-              icon: Icon(
-                Icons.favorite,
-                color: model.isFavorite == true
-                    ? Colors.red
-                    : Colors.white.withOpacity(.5),
-                size: 30,
-              ),
-              onPressed: () => model.toggleFavorite(context),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
+    var actor = model.movieDetailsCast!.cast[castIndex];
+    final profilePath = actor.profilePath;
 
-class _MovieNameWidget extends StatelessWidget {
-  const _MovieNameWidget({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final nameData =
-        context.select((MovieDetailsModel model) => model.data.nameData);
-    return Align(
-      alignment: Alignment.center,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: RichText(
-          maxLines: 3,
-          textAlign: TextAlign.center,
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: nameData.title,
-                style: const TextStyle(
-                  color: whiteColor,
-                  fontSize: 21,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              TextSpan(
-                text: nameData.year,
-                style: const TextStyle(
-                  color: whiteColor,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(90),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xffac55ff).withOpacity(.3),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              )
             ],
           ),
+          child: CircleAvatar(
+            radius: 50,
+            backgroundColor: secondaryText,
+            backgroundImage: profilePath != null
+                ? NetworkImage(ImageDownloader.imageUrl(profilePath))
+                : null,
+          ),
         ),
-      ),
-    );
-  }
-}
-
-class _ScoreAndTrailerWidget extends StatelessWidget {
-  const _ScoreAndTrailerWidget({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final scoreData =
-        context.select((MovieDetailsModel model) => model.data.scoreData);
-    final voteAverage = scoreData.voteAvarage * 10;
-    final trailerKey = scoreData.trailerKey;
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        TextButton(
-            onPressed: () {},
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: RadialPercentWidget(
-                      child: Text(voteAverage.toStringAsFixed(0)),
-                      percent: voteAverage / 100,
-                      fillColor: const Color.fromARGB(255, 10, 23, 25),
-                      lineColor: const Color.fromARGB(255, 37, 203, 103),
-                      freeColor: const Color.fromARGB(255, 25, 54, 31),
-                      lineWidth: 3),
-                ),
-                const SizedBox(width: 10),
-                const Text('User Score'),
-              ],
-            )),
-        Container(
-          color: Colors.grey,
-          width: 1,
-          height: 15,
+        AppText(
+          size: 16,
+          text: actor.name,
+          isBold: FontWeight.bold,
+          alignCenter: true,
         ),
-        trailerKey != null
-            ? _TrailerWidget(trailerKey: trailerKey)
-            : TextButton(
-                onPressed: () {},
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.play_arrow,
-                      color: Colors.grey,
-                    ),
-                    AppText(
-                      size: 14,
-                      text: 'Play Trailer',
-                      color: Colors.grey,
-                      lineThrough: true,
-                    )
-                  ],
-                ),
-              )
+        AppText(
+            size: 15,
+            text: actor.character,
+            color: secondaryText,
+            alignCenter: true),
       ],
     );
   }
 }
 
-class _SummaryWidget extends StatelessWidget {
-  const _SummaryWidget({Key? key}) : super(key: key);
+class _ButtonsRowWidget extends StatelessWidget {
+  const _ButtonsRowWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-     final summary =
-        context.select((MovieDetailsModel model) => model.data.summary);
-    return ColoredBox(
-      color: const Color.fromRGBO(22, 21, 25, 1),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-        child: AppText(
-            alignCenter: true,
-            maxLines: 3,
-            text:summary,
-            size: 14,
-            color: whiteColor),
-      ),
-    );
-  }
-}
-
-class _PeopleWidget extends StatelessWidget {
-  const _PeopleWidget({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-     final crewChunks =
-        context.select((MovieDetailsModel model) => model.data.peopleData);
-    return Column(
-      children: crewChunks
-          .map(
-            (chunk) => Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: _PeopleWidgetsRow(crew: chunk),
-            ),
-          )
-          .toList(),
-    );
-  }
-}
-
-class _PeopleWidgetsRow extends StatelessWidget {
-  final List<MovieDetailsPeopleData> crew;
-  const _PeopleWidgetsRow({required this.crew, Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
+    final model = context.watch<MovieDetailsModel>();
     return Row(
-      mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: crew.map((e) => _PeopleWidgetsRowItem(crew: e)).toList(),
-    );
-  }
-}
-
-class _PeopleWidgetsRowItem extends StatelessWidget {
-  final MovieDetailsPeopleData crew;
-  const _PeopleWidgetsRowItem({
-    required this.crew,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AppText(text: crew.name, size: 16, color: whiteColor),
-          AppText(text: crew.job, size: 16, color: whiteColor.withOpacity(.6)),
-        ],
-      ),
+      children: [
+        Column(
+          children: [
+            const CircleAvatar(
+              backgroundColor: bottomNavColor,
+              child: Icon(Icons.thumb_up, color: primaryText),
+              radius: 30,
+            ),
+            const SizedBox(height: 7),
+            AppText(size: 18, text: 'Нравится')
+          ],
+        ),
+        Column(
+          children: [
+            GestureDetector(
+              onTap: () => model.toggleFavorite(context),
+              child: CircleAvatar(
+                backgroundColor: model.isFavorite != true
+                    ? bottomNavColor
+                    : const Color(0xffac55ff),
+                child: const Icon(Icons.favorite, color: primaryText),
+                radius: 30,
+              ),
+            ),
+            const SizedBox(height: 7),
+            AppText(size: 18, text: 'Закладки')
+          ],
+        ),
+        Column(
+          children: [
+            const CircleAvatar(
+              backgroundColor: bottomNavColor,
+              child: Icon(Icons.comment, color: primaryText),
+              radius: 30,
+            ),
+            const SizedBox(height: 7),
+            AppText(size: 18, text: 'Отзывы')
+          ],
+        ),
+      ],
     );
   }
 }
@@ -301,30 +317,36 @@ class __TrailerWidgetState extends State<_TrailerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () {
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30),
-              topRight: Radius.circular(30),
+    return Align(
+      alignment: Alignment.center,
+      child: GestureDetector(
+        onTap: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
             ),
+            builder: (BuildContext context) {
+              return _showTrailerBottomSheet(
+                widget.trailerKey,
+                _controller,
+              );
+            },
+          );
+        },
+        child: const CircleAvatar(
+          child: Icon(
+            Icons.play_arrow_rounded,
+            color: primaryText,
+            size: 32,
           ),
-          builder: (BuildContext context) {
-            return _showTrailerBottomSheet(
-              widget.trailerKey,
-              _controller,
-            );
-          },
-        );
-      },
-      child: Row(
-        children: const [
-          Icon(Icons.play_arrow),
-          Text('Play Trailer'),
-        ],
+          backgroundColor: purple,
+          radius: 24,
+        ),
       ),
     );
   }

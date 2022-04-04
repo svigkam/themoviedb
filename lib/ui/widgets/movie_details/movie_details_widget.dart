@@ -4,7 +4,7 @@ import 'package:themoviedb/constants/constants.dart';
 import 'package:themoviedb/ui/widgets/movie_details/movie_details_model.dart';
 
 import 'movie_details_main_info_widget.dart';
-import 'movie_details_main_screen_cast_widget.dart';
+
 
 class MovieDetailsWidget extends StatefulWidget {
   const MovieDetailsWidget({Key? key}) : super(key: key);
@@ -22,27 +22,49 @@ class _MovieDetailsWidgetState extends State<MovieDetailsWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: primaryColor,
-        title: const Image(
-          image: AssetImage('assets/images/logo.png'),
-          fit: BoxFit.fitHeight,
+      backgroundColor: background,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            const _BodyWidget(),
+            Positioned(
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      background,
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          icon: const Icon(Icons.arrow_back_ios,
+                              color: primaryText),
+                        ),
+                        AppText(size: 20, text: 'Назад', color: primaryText),
+                      ],
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.ios_share_rounded,
+                          color: primaryText),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
         ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.person, color: whiteColor),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.search, color: secondaryColor),
-          ),
-        ],
-      ),
-      body: const ColoredBox(
-        color: Color.fromRGBO(24, 23, 27, 1),
-        child: _BodyWidget(),
       ),
     );
   }
@@ -61,7 +83,6 @@ class _BodyWidget extends StatelessWidget {
     return ListView(
       children: const [
         MovieDetailsMainInfoWidget(),
-        MovieDetailsMainScreenCastWidget(),
       ],
     );
   }

@@ -11,48 +11,36 @@ import 'package:themoviedb/domain/entity/movie_details_video.dart';
 import 'package:themoviedb/domain/services/auth_service.dart';
 import 'package:themoviedb/ui/navigation/main_navigation.dart';
 
-class MovieDetailsPosterData {
+class MovieDetailsBackdropPosterData {
   final String? backdropPath;
-  final String? posterPath;
-  final bool isFavorite;
-
-  MovieDetailsPosterData({
-    this.backdropPath,
-    this.posterPath,
-    required this.isFavorite,
-  });
-}
-
-class MovieDetailsNameData {
-  final String title;
-  final String year;
-  MovieDetailsNameData({required this.title, required this.year});
-}
-
-class MovieDetailsScoreAndTrailerData {
   final String? trailerKey;
-  final double voteAvarage;
-  MovieDetailsScoreAndTrailerData({
-    this.trailerKey,
-    required this.voteAvarage,
-  });
+
+  MovieDetailsBackdropPosterData({this.backdropPath, this.trailerKey});
 }
 
-class MovieDetailsPeopleData {
-  final String name;
-  final String job;
-  MovieDetailsPeopleData({required this.name, required this.job});
+class MovieDetailsMovieMainDataWidget {
+  final String? posterPath;
+  final String? title;
+  final String? year;
+  final String? time;
+  final double? voteCount;
+  final double? voteAvarage;
+
+  MovieDetailsMovieMainDataWidget({
+    this.posterPath,
+    this.title,
+    this.year,
+    this.time,
+    this.voteCount,
+    this.voteAvarage,
+  });
 }
 
 class MovieDetailsData {
   bool isLoading = true;
+  MovieDetailsBackdropPosterData posterData = MovieDetailsBackdropPosterData();
+  MovieDetailsMovieMainDataWidget mainData = MovieDetailsMovieMainDataWidget();
   String overview = '';
-  MovieDetailsPosterData posterData = MovieDetailsPosterData(isFavorite: false);
-  MovieDetailsNameData nameData = MovieDetailsNameData(title: '', year: '');
-  MovieDetailsScoreAndTrailerData scoreData =
-      MovieDetailsScoreAndTrailerData(voteAvarage: 0);
-  String summary = '';
-  List<List<MovieDetailsPeopleData>> peopleData = [];
 }
 
 class MovieDetailsModel extends ChangeNotifier {
@@ -100,83 +88,66 @@ class MovieDetailsModel extends ChangeNotifier {
       if (sessionId != null) {
         _isFavorite = await _movieApiClient.isFavorite(movieId, sessionId);
       }
-      updateData(_movieDetails, _isFavorite, _movieDetailsCast);
+      updateData(_movieDetails, _isFavorite);
     } on ApiClientException catch (e) {
       _handleApiClientException(e, context);
     }
   }
 
-  void updateData(MovieDetails? details, bool isFavorite,
-      MovieDetailsCredits? castDetails) {
+  void updateData(MovieDetails? details, bool isFavorite) {
     data.isLoading = details == null;
     if (details == null) {
       notifyListeners();
       return;
     }
     data.overview = details.overview ?? '';
-    data.posterData = MovieDetailsPosterData(
-      backdropPath: details.backdropPath,
-      posterPath: details.posterPath,
-      isFavorite: isFavorite,
-    );
-    var year = details.releaseDate?.year.toString();
-    year != null ? year = ' ($year)' : '';
-    data.nameData = MovieDetailsNameData(title: details.title, year: year!);
+
     final videos = movieDetailsVideo?.results
         .where((video) => video.type == 'Trailer' && video.site == 'YouTube');
     final trailerKey = videos?.isNotEmpty == true ? videos?.first.key : null;
-    data.scoreData = MovieDetailsScoreAndTrailerData(
-      voteAvarage: details.voteAverage,
-      trailerKey: trailerKey,
-    );
-    data.summary = makeSummary(details);
-    data.peopleData = makePeopleData(castDetails);
+    data.posterData = MovieDetailsBackdropPosterData(
+        backdropPath: details.backdropPath, trailerKey: trailerKey);
 
-    notifyListeners();
-  }
-
-  String makeSummary(MovieDetails details) {
-    var result = <String>[];
-
-    final releaseDate = details.releaseDate;
-    if (releaseDate != null) result.add(stringFromDate(releaseDate));
-
-    final productionCountries = details.productionCountries;
-    if (productionCountries.isNotEmpty) {
-      result.add('(${productionCountries.first.iso})');
-    }
-
+    var year = details.releaseDate?.year.toString();
+    year != null ? year = year : '';
     final runtime = details.runtime ?? 0;
     final duration = Duration(minutes: runtime);
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
-    result.add('${hours}h ${minutes}m');
+    data.mainData = MovieDetailsMovieMainDataWidget(
+      posterPath: details.posterPath,
+      year: year ?? '',
+      title: details.title,
+      voteAvarage: details.voteAverage,
+      voteCount: details.voteCount.toDouble(),
+      time: '${hours}h ${minutes}m',
+    );
 
-    var genresNames = [];
-    final genres = details.genres;
-    if (genres.isNotEmpty) {
-      for (var genre in genres) {
-        genresNames.add(genre.name);
-      }
-      genresNames.join(', ');
-      result.add(genresNames.join(', '));
-    }
-    return result.join(' ');
+    notifyListeners();
   }
 
-  List<List<MovieDetailsPeopleData>> makePeopleData(
-      MovieDetailsCredits? details) {
-    var crew = details?.crew.map((e) => MovieDetailsPeopleData(name: e.name, job: e.job)).toList();
-    if (crew == null || crew.isEmpty) return [];
-    crew = crew.length > 4 ? crew.sublist(0, 4) : crew;
-    var crewChunks = <List<MovieDetailsPeopleData>>[];
-    for (var i = 0; i < crew.length; i += 2) {
-      crewChunks.add(
-        crew.sublist(i, i + 2 > crew.length ? crew.length : i + 2),
-      );
-    }
-    return crewChunks;
-  }
+  // String makeSummary(MovieDetails details) {
+  //   var result = <String>[];
+
+  //   final releaseDate = details.releaseDate;
+  //   if (releaseDate != null) result.add(stringFromDate(releaseDate));
+
+  //   final productionCountries = details.productionCountries;
+  //   if (productionCountries.isNotEmpty) {
+  //     result.add('(${productionCountries.first.iso})');
+  //   }
+
+  //   var genresNames = [];
+  //   final genres = details.genres;
+  //   if (genres.isNotEmpty) {
+  //     for (var genre in genres) {
+  //       genresNames.add(genre.name);
+  //     }
+  //     genresNames.join(', ');
+  //     result.add(genresNames.join(', '));
+  //   }
+  //   return result.join(' ');
+  // }
 
   Future<void> toggleFavorite(BuildContext context) async {
     final accountId = await _sessionDataProvider.getAccountId();

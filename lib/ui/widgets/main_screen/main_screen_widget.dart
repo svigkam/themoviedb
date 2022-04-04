@@ -22,28 +22,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: primaryColor,
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.logout, color: whiteColor),
-        ),
-        title: const Image(
-          image: AssetImage('assets/images/logo.png'),
-          fit: BoxFit.fitHeight,
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.person, color: whiteColor),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.search, color: secondaryColor),
-          ),
-        ],
-      ),
+      backgroundColor: background,
       body: IndexedStack(
         index: _selectedTab,
         children: [
@@ -55,18 +34,19 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedTab,
         elevation: 0,
-        backgroundColor: primaryColor,
-        selectedItemColor: secondaryColor,
-        unselectedItemColor: unselectedItem,
+        backgroundColor: bottomNavColor,
+        selectedItemColor: bottomNavSelect,
+        unselectedItemColor: bottomNavUnselect,
         showUnselectedLabels: false,
+        showSelectedLabels: false,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.newspaper_outlined),
             label: 'Новости',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.movie_filter),
-            label: 'Фильмы',
+            icon: Icon(Icons.search),
+            label: 'Поиск',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.tv),

@@ -20,11 +20,13 @@ class _MovieListWidgetState extends State<MovieListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: const [
-        _MovieListWidget(),
-        _SearchWidget(),
-      ],
+    return SafeArea(
+      child: Stack(
+        children: const [
+          _MovieListWidget(),
+          _SearchWidget(),
+        ],
+      ),
     );
   }
 }
@@ -34,16 +36,27 @@ class _SearchWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<MovieListModel>();
+    final model = context.watch<MovieListModel>();
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: TextField(
         onChanged: (val) => model.searchMovie(val),
         decoration: InputDecoration(
+          prefixIcon: const Icon(
+            Icons.search,
+            color: purple,
+          ),
           filled: true,
-          fillColor: whiteColor.withAlpha(235),
-          label: const Text('Поиск'),
-          border: const OutlineInputBorder(),
+          fillColor: bottomNavColor.withAlpha(235),
+          hintText: 'Поиск..',
+          hintStyle: const TextStyle(color: secondaryText),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(25),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: purple),
+            borderRadius: BorderRadius.circular(25),
+          ),
         ),
       ),
     );
@@ -87,7 +100,7 @@ class _MovieListRowWidget extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border.all(color: blackColor.withOpacity(.2)),
               borderRadius: BorderRadius.circular(10),
-              color: whiteColor,
+              color: bottomNavColor,
               boxShadow: [
                 BoxShadow(
                   color: blackColor.withOpacity(.1),
@@ -116,17 +129,18 @@ class _MovieListRowWidget extends StatelessWidget {
                           overflow: true),
                       const SizedBox(height: 5),
                       AppText(
-                          size: 16,
-                          text: movie.releaseDate!,
-                          color: Colors.grey,
-                          maxLines: 1,
-                          overflow: true),
-                      const SizedBox(height: 15),
-                      Text(
-                        movie.overview!,
+                        size: 16,
+                        text: movie.releaseDate!,
+                        color: secondaryText,
+                        maxLines: 1,
+                      ),
+                      const SizedBox(height: 12),
+                      AppText(
+                        size: 16,
+                        text: movie.overview!,
+                        color: primaryText,
                         maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      )
+                      ),
                     ],
                   ),
                 ),
