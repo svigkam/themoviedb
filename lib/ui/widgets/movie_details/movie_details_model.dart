@@ -38,6 +38,12 @@ class MovieDetailsScoreAndTrailerData {
   });
 }
 
+class MovieDetailsPeopleData {
+  final String name;
+  final String job;
+  MovieDetailsPeopleData({required this.name, required this.job});
+}
+
 class MovieDetailsData {
   bool isLoading = true;
   String overview = '';
@@ -45,6 +51,8 @@ class MovieDetailsData {
   MovieDetailsNameData nameData = MovieDetailsNameData(title: '', year: '');
   MovieDetailsScoreAndTrailerData scoreData =
       MovieDetailsScoreAndTrailerData(voteAvarage: 0);
+  String summary = '';
+  List<List<MovieDetailsPeopleData>> peopleData = [];
 }
 
 class MovieDetailsModel extends ChangeNotifier {
@@ -92,13 +100,14 @@ class MovieDetailsModel extends ChangeNotifier {
       if (sessionId != null) {
         _isFavorite = await _movieApiClient.isFavorite(movieId, sessionId);
       }
-      updateData(_movieDetails, _isFavorite);
+      updateData(_movieDetails, _isFavorite, _movieDetailsCast);
     } on ApiClientException catch (e) {
       _handleApiClientException(e, context);
     }
   }
 
-  void updateData(MovieDetails? details, bool isFavorite) {
+  void updateData(MovieDetails? details, bool isFavorite,
+      MovieDetailsCredits? castDetails) {
     data.isLoading = details == null;
     if (details == null) {
       notifyListeners();
@@ -120,8 +129,53 @@ class MovieDetailsModel extends ChangeNotifier {
       voteAvarage: details.voteAverage,
       trailerKey: trailerKey,
     );
+    data.summary = makeSummary(details);
+    data.peopleData = makePeopleData(castDetails);
 
     notifyListeners();
+  }
+
+  String makeSummary(MovieDetails details) {
+    var result = <String>[];
+
+    final releaseDate = details.releaseDate;
+    if (releaseDate != null) result.add(stringFromDate(releaseDate));
+
+    final productionCountries = details.productionCountries;
+    if (productionCountries.isNotEmpty) {
+      result.add('(${productionCountries.first.iso})');
+    }
+
+    final runtime = details.runtime ?? 0;
+    final duration = Duration(minutes: runtime);
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    result.add('${hours}h ${minutes}m');
+
+    var genresNames = [];
+    final genres = details.genres;
+    if (genres.isNotEmpty) {
+      for (var genre in genres) {
+        genresNames.add(genre.name);
+      }
+      genresNames.join(', ');
+      result.add(genresNames.join(', '));
+    }
+    return result.join(' ');
+  }
+
+  List<List<MovieDetailsPeopleData>> makePeopleData(
+      MovieDetailsCredits? details) {
+    var crew = details?.crew.map((e) => MovieDetailsPeopleData(name: e.name, job: e.job)).toList();
+    if (crew == null || crew.isEmpty) return [];
+    crew = crew.length > 4 ? crew.sublist(0, 4) : crew;
+    var crewChunks = <List<MovieDetailsPeopleData>>[];
+    for (var i = 0; i < crew.length; i += 2) {
+      crewChunks.add(
+        crew.sublist(i, i + 2 > crew.length ? crew.length : i + 2),
+      );
+    }
+    return crewChunks;
   }
 
   Future<void> toggleFavorite(BuildContext context) async {

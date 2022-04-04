@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:themoviedb/constants/constants.dart';
 import 'package:themoviedb/domain/api_client/image_downloader.dart';
-import 'package:themoviedb/domain/entity/movie_details_credits.dart';
 import 'package:themoviedb/ui/widgets/movie_details/movie_details_model.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -19,7 +18,7 @@ class MovieDetailsMainInfoWidget extends StatelessWidget {
         _TopPostersWidget(),
         _MovieNameWidget(),
         _ScoreAndTrailerWidget(),
-        _SummeryWidget(),
+        _SummaryWidget(),
         _OverViewWidget(),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
@@ -201,42 +200,13 @@ class _ScoreAndTrailerWidget extends StatelessWidget {
   }
 }
 
-class _SummeryWidget extends StatelessWidget {
-  const _SummeryWidget({Key? key}) : super(key: key);
+class _SummaryWidget extends StatelessWidget {
+  const _SummaryWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var texts = <String>[];
-
-    final model = context.read<MovieDetailsModel>();
-    var movieDetails =
-        context.select((MovieDetailsModel model) => model.movieDetails);
-
-    final releaseDate = movieDetails?.releaseDate;
-    if (releaseDate != null) {
-      texts.add(model.stringFromDate(releaseDate));
-    }
-
-    final productionCountries = movieDetails?.productionCountries;
-    if (productionCountries != null && productionCountries.isNotEmpty) {
-      texts.add('(${productionCountries.first.iso})');
-    }
-
-    final runtime = movieDetails?.runtime ?? 0;
-    final duration = Duration(minutes: runtime);
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-    texts.add('${hours}h ${minutes}m');
-
-    var genresNames = [];
-    final genres = movieDetails?.genres;
-    if (genres != null && genres.isNotEmpty) {
-      for (var genre in genres) {
-        genresNames.add(genre.name);
-      }
-      genresNames.join(', ');
-      texts.add(genresNames.join(', '));
-    }
+     final summary =
+        context.select((MovieDetailsModel model) => model.data.summary);
     return ColoredBox(
       color: const Color.fromRGBO(22, 21, 25, 1),
       child: Padding(
@@ -244,7 +214,7 @@ class _SummeryWidget extends StatelessWidget {
         child: AppText(
             alignCenter: true,
             maxLines: 3,
-            text: texts.join(' '),
+            text:summary,
             size: 14,
             color: whiteColor),
       ),
@@ -257,16 +227,8 @@ class _PeopleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<MovieDetailsModel>();
-    var crew = model.movieDetailsCast?.crew;
-    if (crew == null || crew.isEmpty) return const SizedBox.shrink();
-    crew = crew.length > 4 ? crew.sublist(0, 4) : crew;
-    var crewChunks = <List<Crew>>[];
-    for (var i = 0; i < crew.length; i += 2) {
-      crewChunks.add(
-        crew.sublist(i, i + 2 > crew.length ? crew.length : i + 2),
-      );
-    }
+     final crewChunks =
+        context.select((MovieDetailsModel model) => model.data.peopleData);
     return Column(
       children: crewChunks
           .map(
@@ -281,7 +243,7 @@ class _PeopleWidget extends StatelessWidget {
 }
 
 class _PeopleWidgetsRow extends StatelessWidget {
-  final List<Crew> crew;
+  final List<MovieDetailsPeopleData> crew;
   const _PeopleWidgetsRow({required this.crew, Key? key}) : super(key: key);
 
   @override
@@ -295,7 +257,7 @@ class _PeopleWidgetsRow extends StatelessWidget {
 }
 
 class _PeopleWidgetsRowItem extends StatelessWidget {
-  final Crew crew;
+  final MovieDetailsPeopleData crew;
   const _PeopleWidgetsRowItem({
     required this.crew,
     Key? key,
