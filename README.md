@@ -1,8 +1,14 @@
 # TheMovieDB API
 
-| First Header  | Second Header | First Header  |
-| ------------- | ------------- | ------------- |
-| ![Screenshot_1648994076](https://user-images.githubusercontent.com/63847876/161431464-c6e88a59-8063-4835-b98e-996506ef154c.png)  |  ![Screenshot_1648994088](https://user-images.githubusercontent.com/63847876/161431466-31396456-4a48-42ab-9fd0-77aab01da6ce.png)  | ![Screenshot_1648994108](https://user-images.githubusercontent.com/63847876/161431467-2b753e01-69c4-4155-bbb8-49da6fdeb888.png)  
-| ![Screenshot_1648994068](https://user-images.githubusercontent.com/63847876/161431462-afd307bc-6560-4ed2-affd-9027c3004f10.png)  | ![Screenshot_1648994141](https://user-images.githubusercontent.com/63847876/161431468-ebbed6ff-1242-4fc7-898b-8c21fdb6756d.png) 
+|  | |   |   |
+| ------------- | ------------- | ------------- | ------------- |
+| ![Screenshot_1649091754](https://user-images.githubusercontent.com/63847876/161585081-5a464c65-849d-4db5-82c9-44ca7fcf1377.png)  |  ![Screenshot_1649091762](https://user-images.githubusercontent.com/63847876/161585068-2052e1eb-c18b-4dac-a2e2-e15a3c70d07c.png) |![Screenshot_1649092394](https://user-images.githubusercontent.com/63847876/161586819-59fa0794-1a02-47c0-af85-1c6e34eca8f4.png) | ![Screenshot_1649091768](https://user-images.githubusercontent.com/63847876/161585060-7d8d46f9-0721-4f13-9867-a34b6ad78f4b.png) 
+| ![Screenshot_1649091771](https://user-images.githubusercontent.com/63847876/161585050-1a68c97f-ecdc-4680-ae77-92165df14210.png)  | ![Screenshot_1649091780](https://user-images.githubusercontent.com/63847876/161585043-ef96b1b7-65a8-49a4-b891-39d44490ec9e.png) | ![Screenshot_1649091786](https://user-images.githubusercontent.com/63847876/161585030-cce5bf12-b1ca-486d-b997-0ffeb286b538.png)
+
+
+
+
+
+
 
 
