@@ -10,7 +10,7 @@ class AuthWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: primaryColor,
+        backgroundColor: lightPrimary,
         title: const Image(
           image: AssetImage('assets/images/logo.png'),
           fit: BoxFit.fitHeight,
@@ -41,7 +41,7 @@ class _HeaderWidget extends StatelessWidget {
           AppText(
               size: 20,
               text: 'Войти в свою учётную запись',
-              color: primaryColor),
+              color: lightPrimary),
           const SizedBox(height: 12),
           AppText(
               size: 16,
@@ -51,7 +51,7 @@ class _HeaderWidget extends StatelessWidget {
           AppText(
             size: 16,
             text: 'Нажмите здесь, чтобы начать.',
-            color: secondaryColor,
+            color: lightPrimary,
           ),
           const SizedBox(height: 25),
           const _FormWidget()
@@ -103,7 +103,7 @@ class _FormWidget extends StatelessWidget {
                 isBold: FontWeight.w400,
                 size: 16,
                 text: 'Забыл пароль?',
-                color: secondaryColor,
+                color: lightPrimary,
               ),
             ),
           ],
@@ -125,7 +125,7 @@ class _AuthButtonWidget extends StatelessWidget {
             height: 16,
             width: 16,
             child: CircularProgressIndicator(
-              color: whiteColor,
+              color: white,
               strokeWidth: 2,
             ),
           )
@@ -133,11 +133,11 @@ class _AuthButtonWidget extends StatelessWidget {
             isBold: FontWeight.bold,
             size: 16,
             text: 'Войти',
-            color: whiteColor,
+            color: white,
           );
     return TextButton(
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(secondaryColor),
+        backgroundColor: MaterialStateProperty.all(lightPrimary),
         padding: MaterialStateProperty.all(
             const EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
       ),

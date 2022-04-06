@@ -5,26 +5,18 @@
 import 'package:flutter/material.dart';
 // import 'package:image_picker/image_picker.dart';
 
+const primary = Color(0xff292929);
+const lightPrimary = Color(0xff383434);
+const secondary = Color(0xff3372b1);
 
-const background = Color(0xff2f2e3e);
-const purple = Color(0xffac55ff);
-
-const primaryColorRed = Color(0xFFda1a37);
-const secondaryColorRed = Color(0xFF1a1a2c);
-
-const bottomNavColor = Color(0xff414256);
-const bottomNavSelect = Color(0xffac5cd3);
 const bottomNavUnselect = Color(0xffededf3);
 
 const primaryText = Color(0xfff4f4f5);
-const secondaryText = Color(0xff8d8ba1);
+const secondaryText = Color.fromARGB(255, 157, 157, 165);
 
-const primaryColor = Color(0xff032541);
-const secondaryColor = Color(0xff01b4e4);
-
-const whiteColor = Colors.white;
-const blackColor = Colors.black;
-const greyColor = Color.fromRGBO(0, 0, 0, .6);
+const white = Colors.white;
+const black = Colors.black;
+const grey = Color.fromRGBO(0, 0, 0, .6);
 
 Widget AppText(
     {FontWeight isBold = FontWeight.normal,
@@ -48,7 +40,7 @@ Widget AppText(
   );
 }
 
-showSnackBar(BuildContext context, String text, {Color color = primaryColor}) {
+showSnackBar(BuildContext context, String text, {Color color = secondary}) {
   return ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       backgroundColor: color,
@@ -56,4 +48,42 @@ showSnackBar(BuildContext context, String text, {Color color = primaryColor}) {
       content: Text(text, textAlign: TextAlign.center),
     ),
   );
+}
+
+class StarDisplayWidget extends StatelessWidget {
+  final int value;
+  final Widget filledStar;
+  final Widget unfilledStar;
+  const StarDisplayWidget({
+    Key? key,
+    this.value = 0,
+    required this.filledStar,
+    required this.unfilledStar,
+  })  : assert(value != null),
+        super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (index) {
+        return index < value ? filledStar : unfilledStar;
+      }),
+    );
+  }
+}
+
+class StarDisplay extends StarDisplayWidget {
+  const StarDisplay({Key? key, int value = 0})
+      : super(
+          key: key,
+          value: value,
+          filledStar: const Icon(
+            Icons.star,
+            color: Colors.amber,
+          ),
+          unfilledStar: const Icon(
+            Icons.star_border,
+            color: Colors.amber,
+          ),
+        );
 }

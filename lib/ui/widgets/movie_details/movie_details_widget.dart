@@ -22,7 +22,7 @@ class _MovieDetailsWidgetState extends State<MovieDetailsWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: primary,
       body: SafeArea(
         child: Stack(
           children: [
@@ -32,7 +32,7 @@ class _MovieDetailsWidgetState extends State<MovieDetailsWidget> {
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      background,
+                      primary,
                       Colors.transparent,
                     ],
                     begin: Alignment.topCenter,
@@ -78,7 +78,7 @@ class _BodyWidget extends StatelessWidget {
     final isLoading =
         context.select((MovieDetailsModel model) => model.data.isLoading);
     if (isLoading == true) {
-      return const Center(child: SpinKitSpinningLines(color: purple));
+      return const Center(child: SpinKitSpinningLines(color: secondary));
     }
     return ListView(
       children: const [

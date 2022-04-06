@@ -8,7 +8,7 @@ import 'package:themoviedb/domain/entity/popular_movie_response.dart';
 class MovieApiClient {
   final _networkClient = NetworkClient();
 
-  Future<PopularMovieResponse> popularMovies(int page, String locale, String apiKey) async {
+  Future<PopularMovieResponse> getPopularMovies(int page, String locale, String apiKey) async {
     parser(dynamic json) {
       final jsonMap = json as Map<String, dynamic>;
       final response = PopularMovieResponse.fromJson(jsonMap);
@@ -26,7 +26,7 @@ class MovieApiClient {
     return result;
   }
 
-  Future<PopularMovieResponse> nowPlayingMovies(String locale, String apiKey) async {
+  Future<PopularMovieResponse> getNowPlayingMovies(String locale, String apiKey) async {
     parser(dynamic json) {
       final jsonMap = json as Map<String, dynamic>;
       final response = PopularMovieResponse.fromJson(jsonMap);
@@ -60,7 +60,7 @@ class MovieApiClient {
   //   return result;
   // }
 
-  Future<PopularMovieResponse>upcomingMovies(String locale, String apiKey) async {
+  Future<PopularMovieResponse> getUpcomingMovies(String locale, String apiKey) async {
     parser(dynamic json) {
       final jsonMap = json as Map<String, dynamic>;
       final response = PopularMovieResponse.fromJson(jsonMap);
@@ -68,6 +68,23 @@ class MovieApiClient {
     }
     final result = _networkClient.get(
       '/movie/upcoming',
+      parser,
+      {
+        'api_key': apiKey,
+        'language': locale,
+      },
+    );
+    return result;
+  }
+
+   Future<PopularMovieResponse> getTopRatedMovies (String locale, String apiKey) async {
+    parser(dynamic json) {
+      final jsonMap = json as Map<String, dynamic>;
+      final response = PopularMovieResponse.fromJson(jsonMap);
+      return response;
+    }
+    final result = _networkClient.get(
+      '/movie/top_rated',
       parser,
       {
         'api_key': apiKey,
@@ -98,6 +115,8 @@ class MovieApiClient {
     );
     return result;
   }
+
+  
 
   Future<MovieDetails> movieDetails(int movieId, String locale) async {
     parser(dynamic json) {

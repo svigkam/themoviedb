@@ -11,7 +11,8 @@ import 'package:themoviedb/ui/widgets/movie_list/movie_list_model.dart';
 import 'package:themoviedb/ui/widgets/movie_list/movie_list_widget.dart';
 import 'package:themoviedb/ui/widgets/news/news_model.dart';
 import 'package:themoviedb/ui/widgets/news/news_widget.dart';
-import 'package:themoviedb/ui/widgets/tv_show_list/tv_show_list_widget.dart';
+import 'package:themoviedb/ui/widgets/profile/profile_model.dart';
+import 'package:themoviedb/ui/widgets/profile/profile_widget.dart';
 
 class ScreenFactory {
   Widget makeLoader() {
@@ -54,7 +55,10 @@ class ScreenFactory {
     );
   }
 
-  Widget makeTvShowList() {
-    return const TvShowListWidget();
+  Widget makeProfile() {
+    return ChangeNotifierProvider(
+      create: (_) => ProfileModel(),
+      child: const ProfileWidget(),
+    );
   }
 }

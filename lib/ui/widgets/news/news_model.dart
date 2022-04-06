@@ -36,6 +36,8 @@ class NewsModel extends ChangeNotifier {
   List<MovieListRowData> get popularMovies => _popularMovies;
   var _upcomingMovies = <MovieListRowData>[];
   List<MovieListRowData> get upcomingMovies => _upcomingMovies;
+  var _topRatedMovies = <MovieListRowData>[];
+  List<MovieListRowData> get topRatedMovies => _topRatedMovies;
 
   NewsModel() {
     _getMovies();
@@ -57,6 +59,9 @@ class NewsModel extends ChangeNotifier {
 
     final upcomingMovies = await _movieService.upcoming('ru-RU');
     _upcomingMovies = upcomingMovies.movies.map(_makeRowData).toList();
+
+    final topRatedMovies = await _movieService.topRatedMovies('ru-RU');
+    _topRatedMovies = topRatedMovies.movies.map(_makeRowData).toList();
 
     notifyListeners();
   }

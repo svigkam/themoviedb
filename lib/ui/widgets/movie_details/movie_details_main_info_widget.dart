@@ -58,7 +58,7 @@ class _BackdropPosterWidget extends StatelessWidget {
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [background, Colors.transparent],
+                  colors: [primary, Colors.transparent],
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),
@@ -124,11 +124,8 @@ class _MovieMainDataWidget extends StatelessWidget {
                 Row(
                   children: [
                     AppText(size: 19, text: mainData.voteAvarage.toString()),
-                    const Icon(Icons.star, color: Colors.amber),
-                    const Icon(Icons.star, color: Colors.amber),
-                    const Icon(Icons.star, color: Colors.amber),
-                    const Icon(Icons.star, color: Colors.amber),
-                    const Icon(Icons.star, color: Colors.amber),
+                    const SizedBox(width: 10),
+                    StarDisplay(value: mainData.voteAvarage! ~/ 2.round()),
                   ],
                 )
               ],
@@ -152,7 +149,7 @@ class _OverViewWidget extends StatelessWidget {
         const SizedBox(height: 25),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-          child: AppText(color: whiteColor, size: 17, text: overview),
+          child: AppText(color: white, size: 17, text: overview),
         ),
       ],
     );
@@ -256,7 +253,7 @@ class _ButtonsRowWidget extends StatelessWidget {
         Column(
           children: [
             const CircleAvatar(
-              backgroundColor: bottomNavColor,
+              backgroundColor: lightPrimary,
               child: Icon(Icons.thumb_up, color: primaryText),
               radius: 30,
             ),
@@ -270,7 +267,7 @@ class _ButtonsRowWidget extends StatelessWidget {
               onTap: () => model.toggleFavorite(context),
               child: CircleAvatar(
                 backgroundColor: model.isFavorite != true
-                    ? bottomNavColor
+                    ? lightPrimary
                     : const Color(0xffac55ff),
                 child: const Icon(Icons.favorite, color: primaryText),
                 radius: 30,
@@ -283,7 +280,7 @@ class _ButtonsRowWidget extends StatelessWidget {
         Column(
           children: [
             const CircleAvatar(
-              backgroundColor: bottomNavColor,
+              backgroundColor: lightPrimary,
               child: Icon(Icons.comment, color: primaryText),
               radius: 30,
             ),
@@ -347,7 +344,7 @@ class __TrailerWidgetState extends State<_TrailerWidget> {
             color: primaryText,
             size: 32,
           ),
-          backgroundColor: purple,
+          backgroundColor: secondary,
           radius: 24,
         ),
       ),

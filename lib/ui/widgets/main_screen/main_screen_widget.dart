@@ -22,27 +22,27 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: primary,
       body: IndexedStack(
         index: _selectedTab,
         children: [
           _screenFactory.makeNewsList(),
           _screenFactory.makeMovieList(),
-          _screenFactory.makeTvShowList(),
+          _screenFactory.makeProfile(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedTab,
         elevation: 0,
-        backgroundColor: bottomNavColor,
-        selectedItemColor: bottomNavSelect,
+        backgroundColor: lightPrimary,
+        selectedItemColor: secondary,
         unselectedItemColor: bottomNavUnselect,
         showUnselectedLabels: false,
-        showSelectedLabels: false,
+        showSelectedLabels: true,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.newspaper_outlined),
-            label: 'Новости',
+            label: 'Лента',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),

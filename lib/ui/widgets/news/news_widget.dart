@@ -28,16 +28,50 @@ class _NewsWidgetState extends State<NewsWidget> {
             child: ListView(
               physics: const BouncingScrollPhysics(),
               children: const [
-                _TrailersWidget(),
-                SizedBox(height: 20),
+                _TopBarWidget(),
+                _TabsWidget(),
                 _NowPlayingWidget(),
                 _PopularsWidget(),
-
-                // _TabsWidget(),
               ],
             ),
           )
-        : const Center(child: SpinKitSpinningLines(color: purple));
+        : const Center(child: SpinKitSpinningLines(color: secondary));
+  }
+}
+
+class _TopBarWidget extends StatelessWidget {
+  const _TopBarWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.menu, color: white),
+          ),
+          Row(
+            children: [
+              IconButton(
+                onPressed: () {},
+                icon:
+                    const Icon(Icons.filter_alt_outlined, color: secondaryText),
+              ),
+              IconButton(
+                onPressed: () {},
+                icon:
+                    const Icon(Icons.notifications_none, color: secondaryText),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -87,7 +121,7 @@ class _TrailersWidget extends StatelessWidget {
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          background,
+                          primary,
                           Colors.transparent,
                         ],
                         begin: Alignment.bottomCenter,
@@ -107,7 +141,7 @@ class _TrailersWidget extends StatelessWidget {
                         Container(
                           decoration: BoxDecoration(boxShadow: [
                             BoxShadow(
-                              color: blackColor.withOpacity(.4),
+                              color: black.withOpacity(.4),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -122,7 +156,7 @@ class _TrailersWidget extends StatelessWidget {
                         Container(
                           decoration: BoxDecoration(boxShadow: [
                             BoxShadow(
-                              color: blackColor.withOpacity(.4),
+                              color: black.withOpacity(.4),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -136,7 +170,7 @@ class _TrailersWidget extends StatelessWidget {
                         Container(
                           decoration: BoxDecoration(boxShadow: [
                             BoxShadow(
-                              color: blackColor.withOpacity(.4),
+                              color: black.withOpacity(.4),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -145,8 +179,7 @@ class _TrailersWidget extends StatelessWidget {
                             overflow: true,
                             size: 16,
                             maxLines: 3,
-                            text:
-                                movie.overview!,
+                            text: movie.overview!,
                             color: primaryText.withAlpha(200),
                           ),
                         ),
@@ -163,66 +196,124 @@ class _TrailersWidget extends StatelessWidget {
   }
 }
 
-// class _TabsWidget extends StatefulWidget {
-//   _TabsWidget({Key? key}) : super(key: key);
-//   @override
-//   State<_TabsWidget> createState() => __TabsWidgetState();
-// }
+class _TabsWidget extends StatefulWidget {
+  const _TabsWidget({Key? key}) : super(key: key);
+  @override
+  State<_TabsWidget> createState() => __TabsWidgetState();
+}
 
-// class __TabsWidgetState extends State<_TabsWidget>
-//     with TickerProviderStateMixin {
-//   @override
-//   Widget build(BuildContext context) {
-//     TabController _tabController = TabController(length: 2, vsync: this);
+class __TabsWidgetState extends State<_TabsWidget>
+    with TickerProviderStateMixin {
+  @override
+  Widget build(BuildContext context) {
+    TabController _tabController = TabController(length: 4, vsync: this);
+    final model = context.read<NewsModel>();
 
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Padding(
-//           padding: const EdgeInsets.all(10.0),
-//           child: AppText(
-//             size: 22,
-//             text: 'Категории',
-//             isBold: FontWeight.bold,
-//           ),
-//         ),
-//         Padding(
-//           padding: const EdgeInsets.symmetric(horizontal: 10),
-//           child: TabBar(
-//             labelColor: primaryText,
-//             labelStyle:
-//                 const TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
-//             unselectedLabelColor: secondaryText,
-//             indicatorSize: TabBarIndicatorSize.tab,
-//             indicator: BoxDecoration(
-//               gradient: const LinearGradient(colors: [
-//                 Color(0xff945df9),
-//                 Color(0xffc75eef),
-//               ]),
-//               borderRadius: BorderRadius.circular(50),
-//             ),
-//             controller: _tabController,
-//             tabs: const [
-//               Tab(text: 'Смотрят сейчас'),
-//               Tab(text: 'Популярные'),
-//             ],
-//             isScrollable: true,
-//           ),
-//         ),
-//         SizedBox(
-//           height: 300,
-//           child: TabBarView(
-//             controller: _tabController,
-//             children: const [
-//               _LatestWidget(),
-//               _LatestWidget(),
-//             ],
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: AppText(
+            size: 20,
+            text: 'Самые популярные',
+            isBold: FontWeight.bold,
+          ),
+        ),
+        SizedBox(
+          height: 235,
+          child: TabBarView(
+            controller: _tabController,
+            children:  [
+              _TopRatedWidget(movies: model.topRatedMovies),
+              _TopRatedWidget(movies: model.playingMovies),
+              _TopRatedWidget(movies: model.popularMovies),
+              _TopRatedWidget(movies: model.upcomingMovies),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: TabBar(
+            labelColor: primaryText,
+            labelStyle:
+                const TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+            unselectedLabelColor: secondaryText,
+            indicatorSize: TabBarIndicatorSize.tab,
+            indicatorPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            indicator: BoxDecoration(
+              gradient: const LinearGradient(colors: [
+                secondary,
+                Color.fromARGB(255, 79, 130, 181),
+              ]),
+              borderRadius: BorderRadius.circular(50),
+            ),
+            controller: _tabController,
+            tabs: const [
+              Tab(text: 'Боевики'),
+              Tab(text: 'Хорроры'),
+              Tab(text: 'Семейные'),
+              Tab(text: 'Комедии'),
+            ],
+            isScrollable: true,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TopRatedWidget extends StatelessWidget {
+  final List<MovieListRowData> movies;
+  const _TopRatedWidget({Key? key, required this.movies}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final model = context.read<NewsModel>();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 235,
+          child: Scrollbar(
+            child: ListView.builder(
+              itemCount:movies.length,
+              physics: const BouncingScrollPhysics(),
+              itemExtent: 150,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (BuildContext context, int index) {
+                final movie = movies[index];
+                return GestureDetector(
+                  onTap: () => model.onMovieTap(context, movie.id!),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          child: AspectRatio(
+                            aspectRatio: 87 / 130,
+                            child: Image(
+                              fit: BoxFit.cover,
+                              image: NetworkImage(
+                                ImageDownloader.imageUrl(
+                                  movie.posterPath!,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
 
 class _NowPlayingWidget extends StatelessWidget {
   const _NowPlayingWidget({Key? key}) : super(key: key);
@@ -235,10 +326,20 @@ class _NowPlayingWidget extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.all(10.0),
-          child: AppText(
-            size: 22,
-            text: 'Сейчас смотрят',
-            isBold: FontWeight.bold,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AppText(
+                size: 20,
+                text: 'Сейчас смотрят',
+                isBold: FontWeight.bold,
+              ),
+              IconButton(
+                onPressed: () {},
+                icon:
+                    const Icon(Icons.arrow_forward_ios, color: white, size: 16),
+              )
+            ],
           ),
         ),
         SizedBox(
@@ -275,10 +376,20 @@ class _PopularsWidget extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.all(10.0),
-          child: AppText(
-            size: 22,
-            text: 'Популярные',
-            isBold: FontWeight.bold,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AppText(
+                size: 20,
+                text: 'Популярные',
+                isBold: FontWeight.bold,
+              ),
+              IconButton(
+                onPressed: () {},
+                icon:
+                    const Icon(Icons.arrow_forward_ios, color: white, size: 16),
+              )
+            ],
           ),
         ),
         SizedBox(
@@ -317,8 +428,8 @@ class _MovieTileWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                clipBehavior: Clip.hardEdge,
+                // borderRadius: BorderRadius.circular(10),
+                // clipBehavior: Clip.hardEdge,
                 child: AspectRatio(
                   aspectRatio: 87 / 130,
                   child: Image(
@@ -360,8 +471,9 @@ class _MovieTileWidget extends StatelessWidget {
               width: 40,
               height: 40,
               child: RadialPercentWidget(
-                  child: Text('${movie.voteAvarage! * 10}',
-                      style: const TextStyle(color: whiteColor)),
+                  child: Text('${(movie.voteAvarage! * 10).round()}',
+                      style:
+                          const TextStyle(color: white, fontFamily: 'Georgia')),
                   percent: movie.voteAvarage! / 10,
                   fillColor: const Color.fromARGB(255, 10, 23, 25),
                   lineColor: const Color.fromARGB(255, 37, 203, 103),

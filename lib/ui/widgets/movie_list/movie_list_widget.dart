@@ -44,17 +44,17 @@ class _SearchWidget extends StatelessWidget {
         decoration: InputDecoration(
           prefixIcon: const Icon(
             Icons.search,
-            color: purple,
+            color: secondary,
           ),
           filled: true,
-          fillColor: bottomNavColor.withAlpha(235),
+          fillColor: lightPrimary.withAlpha(235),
           hintText: 'Поиск..',
           hintStyle: const TextStyle(color: secondaryText),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(25),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: purple),
+            borderSide: const BorderSide(color: secondary),
             borderRadius: BorderRadius.circular(25),
           ),
         ),
@@ -98,12 +98,12 @@ class _MovieListRowWidget extends StatelessWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              border: Border.all(color: blackColor.withOpacity(.2)),
+              border: Border.all(color: black.withOpacity(.2)),
               borderRadius: BorderRadius.circular(10),
-              color: bottomNavColor,
+              color: lightPrimary,
               boxShadow: [
                 BoxShadow(
-                  color: blackColor.withOpacity(.1),
+                  color: black.withOpacity(.1),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -138,8 +138,9 @@ class _MovieListRowWidget extends StatelessWidget {
                       AppText(
                         size: 16,
                         text: movie.overview!,
+                        overflow: true,
                         color: primaryText,
-                        maxLines: 3,
+                        maxLines: 2,
                       ),
                     ],
                   ),
