@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 const primary = Color(0xff292929);
 const lightPrimary = Color(0xff383434);
 const secondary = Color(0xff3372b1);
+const btnsColor = Color(0xff2b3fbb);
 
 const bottomNavUnselect = Color(0xffededf3);
 

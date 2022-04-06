@@ -10,53 +10,69 @@ class AuthWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: AppText(size: 30, text: 'Авторизация'),
         backgroundColor: lightPrimary,
-        title: const Image(
-          image: AssetImage('assets/images/logo.png'),
-          fit: BoxFit.fitHeight,
-          width: 200,
-        ),
-        centerTitle: true,
+        elevation: 0,
       ),
-      body: const SafeArea(
-        child: SingleChildScrollView(
-          child: _HeaderWidget(),
+      backgroundColor: lightPrimary,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                _AuthThroughWidget(),
+                SizedBox(height: 70),
+                _FormWidget()
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-class _HeaderWidget extends StatelessWidget {
-  const _HeaderWidget({Key? key}) : super(key: key);
+class _AuthThroughWidget extends StatelessWidget {
+  const _AuthThroughWidget({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 25),
-          AppText(
-              size: 20,
-              text: 'Войти в свою учётную запись',
-              color: lightPrimary),
-          const SizedBox(height: 12),
-          AppText(
-              size: 16,
-              text:
-                  'Чтобы пользоваться правкой и возможностями рейтинга TMDB, а также получить персональные рекомендации, необходимо войти в свою учётную запись. Если у вас нет учётной записи, её регистрация является бесплатной и простой.'),
-          const SizedBox(height: 6),
-          AppText(
-            size: 16,
-            text: 'Нажмите здесь, чтобы начать.',
-            color: lightPrimary,
-          ),
-          const SizedBox(height: 25),
-          const _FormWidget()
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppText(size: 18, text: 'Войти с помощью'),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xff464140),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: const Icon(Icons.error_outline, color: white),
+              ),
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xff464140),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: const Icon(Icons.error_outline, color: white),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -67,43 +83,62 @@ class _FormWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.read<AuthModel>();
-    const textFieldDecorator = InputDecoration(
-      border: OutlineInputBorder(),
-      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-    );
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        AppText(size: 16, text: 'Имя пользователя'),
-        const SizedBox(height: 5),
+        AppText(size: 22, text: 'Войти с помощью логина', color: primaryText),
+        const SizedBox(height: 25),
         TextField(
-          decoration: textFieldDecorator,
+          style: const TextStyle(color: primaryText),
+          decoration: InputDecoration(
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            hintStyle: const TextStyle(color: secondaryText),
+            hintText: 'Login',
+            prefixIcon: Icon(
+              Icons.person,
+              color: white.withOpacity(.8),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+          ),
           controller: model.loginTextController,
         ),
-        const SizedBox(height: 20),
-        AppText(size: 16, text: 'Пароль'),
-        const SizedBox(height: 5),
+        const SizedBox(height: 10),
         TextField(
-          decoration: textFieldDecorator,
+          style: const TextStyle(color: primaryText),
+          decoration: InputDecoration(
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            hintText: 'Password',
+            hintStyle: const TextStyle(color: secondaryText),
+            prefixIcon: Icon(Icons.lock, color: white.withOpacity(.8)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+          ),
           obscureText: true,
           controller: model.passwordTextController,
         ),
-        const SizedBox(height: 25),
+        const SizedBox(height: 20),
+        const _AuthButtonWidget(),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            const _AuthButtonWidget(),
-            const SizedBox(width: 25),
+            AppText(
+              size: 16,
+              text: 'Еще нет аккаунта?',
+              color: white.withOpacity(.8),
+            ),
             TextButton(
-              style: ButtonStyle(
-                padding: MaterialStateProperty.all(
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5)),
-              ),
               onPressed: () {},
               child: AppText(
-                isBold: FontWeight.w400,
+                isBold: FontWeight.bold,
+                color: const Color(0xff317cc0),
                 size: 16,
-                text: 'Забыл пароль?',
-                color: lightPrimary,
+                text: 'Зарегистрироваться',
               ),
             ),
           ],
@@ -120,10 +155,13 @@ class _AuthButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<AuthModel>();
     final onPressed = model.canStartAuth ? () => model.auth(context) : null;
+    final btnBackground = model.isAuthProgress
+        ? MaterialStateProperty.all(btnsColor.withOpacity(.5))
+        : MaterialStateProperty.all(btnsColor);
     final child = model.isAuthProgress
         ? const SizedBox(
-            height: 16,
-            width: 16,
+            height: 18,
+            width: 18,
             child: CircularProgressIndicator(
               color: white,
               strokeWidth: 2,
@@ -135,14 +173,22 @@ class _AuthButtonWidget extends StatelessWidget {
             text: 'Войти',
             color: white,
           );
-    return TextButton(
-      style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(lightPrimary),
-        padding: MaterialStateProperty.all(
-            const EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
+    return SizedBox(
+      width: double.maxFinite,
+      child: TextButton(
+        style: ButtonStyle(
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18.0),
+            ),
+          ),
+          backgroundColor: btnBackground,
+          padding: MaterialStateProperty.all(
+              const EdgeInsets.symmetric(vertical: 15)),
+        ),
+        onPressed: onPressed,
+        child: child,
       ),
-      onPressed: onPressed,
-      child: child,
     );
   }
 }
