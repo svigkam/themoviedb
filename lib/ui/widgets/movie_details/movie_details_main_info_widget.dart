@@ -211,20 +211,21 @@ class _CastListItemWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(90),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xffac55ff).withOpacity(.3),
+                color: secondary.withOpacity(.3),
                 blurRadius: 8,
-                offset: const Offset(0, 2),
+                offset: const Offset(2, 2),
               )
             ],
           ),
           child: CircleAvatar(
             radius: 50,
-            backgroundColor: secondaryText,
+            backgroundColor: secondary.withOpacity(.2),
             backgroundImage: profilePath != null
                 ? NetworkImage(ImageDownloader.imageUrl(profilePath))
                 : null,
           ),
         ),
+        SizedBox(height: 7),
         AppText(
           size: 16,
           text: actor.name,
@@ -232,10 +233,12 @@ class _CastListItemWidget extends StatelessWidget {
           alignCenter: true,
         ),
         AppText(
-            size: 15,
-            text: actor.character,
-            color: secondaryText,
-            alignCenter: true),
+          size: 15,
+          text: actor.character,
+          color: secondaryText,
+          alignCenter: true,
+          overflow: true,
+        ),
       ],
     );
   }
@@ -266,9 +269,8 @@ class _ButtonsRowWidget extends StatelessWidget {
             GestureDetector(
               onTap: () => model.toggleFavorite(context),
               child: CircleAvatar(
-                backgroundColor: model.isFavorite != true
-                    ? lightPrimary
-                    : const Color(0xffac55ff),
+                backgroundColor:
+                    model.isFavorite != true ? lightPrimary : secondary,
                 child: const Icon(Icons.favorite, color: primaryText),
                 radius: 30,
               ),

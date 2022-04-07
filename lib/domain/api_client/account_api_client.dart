@@ -1,5 +1,6 @@
 import 'package:themoviedb/configuration/config.dart';
 import 'package:themoviedb/domain/api_client/network_client.dart';
+import 'package:themoviedb/domain/entity/popular_movie_response.dart';
 
 enum ApiClientMediaType { movie, tv }
 
@@ -30,6 +31,29 @@ class AccountApiClient {
       {
         'api_key': Configuration.apiKey,
         'session_id': sessionId,
+      },
+    );
+    return result;
+  }
+
+  Future<PopularMovieResponse> getFavoriteMovies({
+    required String sessionId,
+    required String accountId,
+    required String language,
+  }) async {
+    parser(dynamic json) {
+      final jsonMap = json as Map<String, dynamic>;
+      final response = PopularMovieResponse.fromJson(jsonMap);
+      return response;
+    }
+
+    final result = _networkClient.get(
+      '/account/${accountId.toString()}/favorite/movies',
+      parser,
+      {
+        'api_key': Configuration.apiKey,
+        'session_id': sessionId,
+        'language': language
       },
     );
     return result;

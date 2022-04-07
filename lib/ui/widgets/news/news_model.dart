@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:themoviedb/domain/entity/movie.dart';
+import 'package:themoviedb/domain/services/auth_service.dart';
 import 'package:themoviedb/domain/services/movie_service.dart';
 import 'package:themoviedb/ui/navigation/main_navigation.dart';
 
@@ -26,6 +27,8 @@ class MovieListRowData {
 
 class NewsModel extends ChangeNotifier {
   final _movieService = MovieService();
+  final _authService = AuthService();
+
 
   String _locale = '';
   late DateFormat _dateFormat;
@@ -86,5 +89,10 @@ class NewsModel extends ChangeNotifier {
       MainNavigationRouteNames.movieDetails,
       arguments: id,
     );
+  }
+
+  Future<void> logout(BuildContext context) async {
+    await _authService.logout();
+    MainNavigation.resetNavigation(context);
   }
 }

@@ -28,29 +28,56 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
         children: [
           _screenFactory.makeNewsList(),
           _screenFactory.makeMovieList(),
-          _screenFactory.makeProfile(),
+          _screenFactory.makeFavorite(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedTab,
         elevation: 0,
         backgroundColor: lightPrimary,
-        selectedItemColor: secondary,
+        selectedItemColor: bottomNavUnselect,
         unselectedItemColor: bottomNavUnselect,
         showUnselectedLabels: false,
-        showSelectedLabels: true,
-        items: const [
+        showSelectedLabels: false,
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.newspaper_outlined),
+            icon: _selectedTab == 0
+                ? Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: secondary,
+                    ),
+                    child: const Icon(Icons.newspaper_outlined, size: 30),
+                  )
+                : const Icon(Icons.newspaper_outlined, size: 30),
             label: 'Лента',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
+            icon: _selectedTab == 1
+                ? Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: secondary,
+                    ),
+                    child: const Icon(Icons.search, size: 30),
+                  )
+                : const Icon(Icons.search, size: 30),
             label: 'Поиск',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Профиль',
+            icon: _selectedTab == 2
+                ? Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: secondary,
+                    ),
+                    child: const Icon(Icons.favorite, size: 30),
+                  )
+                : const Icon(Icons.favorite, size: 30),
+            label: 'Закладки',
           ),
         ],
         onTap: onSelectTab,

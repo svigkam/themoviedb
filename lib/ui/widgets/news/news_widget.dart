@@ -46,14 +46,16 @@ class _TopBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = context.read<NewsModel>();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.menu, color: white),
+           onPressed: () => model.logout(context),
+            icon: const Icon(Icons.logout, color: secondaryText),
           ),
           Row(
             children: [
@@ -224,7 +226,7 @@ class __TabsWidgetState extends State<_TabsWidget>
           height: 235,
           child: TabBarView(
             controller: _tabController,
-            children:  [
+            children: [
               _TopRatedWidget(movies: model.topRatedMovies),
               _TopRatedWidget(movies: model.playingMovies),
               _TopRatedWidget(movies: model.popularMovies),
@@ -240,7 +242,8 @@ class __TabsWidgetState extends State<_TabsWidget>
                 const TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
             unselectedLabelColor: secondaryText,
             indicatorSize: TabBarIndicatorSize.tab,
-            indicatorPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            indicatorPadding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             indicator: BoxDecoration(
               gradient: const LinearGradient(colors: [
                 secondary,
@@ -277,7 +280,7 @@ class _TopRatedWidget extends StatelessWidget {
           height: 235,
           child: Scrollbar(
             child: ListView.builder(
-              itemCount:movies.length,
+              itemCount: movies.length,
               physics: const BouncingScrollPhysics(),
               itemExtent: 150,
               scrollDirection: Axis.horizontal,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:themoviedb/constants/constants.dart';
 import 'package:themoviedb/ui/widgets/auth/auth_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AuthWidget extends StatelessWidget {
   const AuthWidget({Key? key}) : super(key: key);
@@ -133,7 +134,14 @@ class _FormWidget extends StatelessWidget {
               color: white.withOpacity(.8),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () async {
+                const url = "https://www.themoviedb.org/signup";
+                if (await canLaunch(url)) {
+                  await launch(url);
+                } else {
+                  // can't launch url
+                }
+              },
               child: AppText(
                 isBold: FontWeight.bold,
                 color: const Color(0xff317cc0),
